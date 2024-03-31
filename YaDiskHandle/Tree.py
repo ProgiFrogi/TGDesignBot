@@ -22,6 +22,8 @@ class Tree:
     # Delete the node and it's children by name.
     def delete_node(self, name: str):
         parent = self.__get_parent__(self.root, name)
+        if parent.name == 'None':
+            return
         delete_node = [x for x in parent.children if x.name == name]
         parent.children.remove(delete_node[0])
 
@@ -40,7 +42,7 @@ class Tree:
         else:
             return target
 
-    def is_exist(self, name: str) -> bool:
+    def exist(self, name: str) -> bool:
         return self.__search__(self.root, name).name != 'None'
 
     # Searching target Node in tree. If node doesn't exist return fake node with name = 'None'
