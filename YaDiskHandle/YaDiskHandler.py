@@ -1,73 +1,84 @@
 import datetime
-
 import yadisk
+import YaDiskInfo
+import Tree
 
-ya_disk = yadisk.YaDisk(token=Token)
+ya_disk = yadisk.YaDisk(token='Token')
+
+
+def is_images(item) -> bool:
+    return item.is_dir() and ('фото' in item.name.lower() or "photo" in item.name.lower())
+
+
+def is_template(item) -> bool:
+    return item.name.endswith('.pptx')
+
+
+def is_font(item) -> bool:
+    return item.name.endswith('.zip') and ('шрифт' in item.name.lower() or "font" in item.name.lower())
+
+
+def check_token(token):
+    if not token.check_token():
+        raise Exception("Invalid token")
 
 
 # Recursive find in YDisk. Takes the current directory and find files in it.
 def __search_in_directory__(directory: str,
                             last_updated_time: datetime.datetime,
-                            templates: list,
-                            fonts: list,
-                            images: list):
+                            ya_disk_info: YaDiskInfo):
     for item in ya_disk.listdir(directory):
-        if item.is_dir() and not ('фото' in item.name.lower() or "photo" in item.name.lower()):
-            __search_in_directory__(item.path,
-                                    last_updated_time,
-                                    templates,
-                                    fonts,
-                                    images)
+        if item.is_dir() and not is_images(item):
+            __search_in_directory__(item.path, last_updated_time, ya_disk_info)
 
-        if item.is_dir and ('фото' in item.name.lower() or "photo" in item.name.lower()):
-            images.append({'position': item.path,
-                           'path': item.path[: item.path.rfind('/')]})
+        if is_images(item):
+            ya_disk_info.add_image(item.path, item.path[: item.path.rfind('/')])
 
         elif last_updated_time < item.created:
-            if item.name.endswith('.pptx'):
-                templates.append({'name': item.name,
-                                  'file': item.file,
-                                  'path': item.path[: item.path.rfind('/')]})
+            if is_template(item):
+                ya_disk_info.add_template(item.name, item.file, item.path[: item.path.rfind('/')])
 
-            elif item.name.endswith('.zip'):
-                fonts.append({'file': item.file,
-                              'path': item.path[: item.path.rfind('/')]})
+            elif is_font(item):
+                ya_disk_info.add_font(item.file, item.path[: item.path.rfind('/')])
 
 
 # Function take an empty lists ant trying to bring from YDisc all files created from last
 # checking. Using ISO 8601 format of time with milliseconds.
-# Writing into templates dictionary by keys:
-#            'name' - the name of file
-#            'file' - the download link of file
-#            'path' - the path of file from root to last directory
-# Writing into fonts dictionary by keys:
-#            'file' - the download link of file
-#            'path' - the path of file from root to last directory
-# Writing into images dictionary by keys:
-#            'position' - the current path of file. Can easily access to this file.
-#            'path' - the path of file from root to last directory.
-def __get_last_added_files__(last_updated_time: datetime.datetime,
-                             templates: list,
-                             fonts: list,
-                             images: list):
-    if not ya_disk.check_token():
-        raise Exception("Invalid token")
-
+def get_last_added_files(last_updated_time: datetime.datetime, ya_disk_info: YaDiskInfo):
+    check_token(ya_disk)
     try:
-        __search_in_directory__('/', last_updated_time, templates, fonts, images)
+        __search_in_directory__('/', last_updated_time, ya_disk_info)
     except Exception as e:
-        templates.clear()
-        fonts.clear()
-        images.clear()
+        ya_disk_info.clear()
         raise Exception("Can't find any files")
 
 
+def __delete_nodes__(directory: str, tree: Tree):
+    for item in ya_disk.trash_listdir(directory):
+        if item.is_dir():
+            __delete_nodes__(item.path, tree)
+            tree.delete_node(item.name)
+
+
+def __add_nodes__(directory: str, last_updated_time, tree: Tree):
+    for item in ya_disk.listdir(directory):
+        if item.is_dir():
+            if last_updated_time < item.created:
+                tree.insert(directory, item.name)
+            __add_nodes__(item.path, last_updated_time, tree)
+
+
+def update_tree(tree: Tree, last_updated_time):
+    check_token(ya_disk)
+    __delete_nodes__('/', tree)
+    __add_nodes__('/', last_updated_time, tree)
+    last_updated_time = datetime.datetime.now(tz=datetime.timezone.utc)
+
+
 # This function returns all files from YDisk.
-# Returns templates, fonts, images of uploaded in this order
-def get_all_files_in_disk() -> [list, list, list]:
+# Returns an object of class YaDiskInfo.
+def get_all_files_in_disk() -> YaDiskInfo:
     last_updated_time = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
-    templates = []
-    fonts = []
-    images = []
-    __get_last_added_files__(last_updated_time, templates, fonts, images)
-    return templates, fonts, images
+    ya_disk_info = YaDiskInfo
+    get_last_added_files(last_updated_time, ya_disk_info)
+    return ya_disk_info
