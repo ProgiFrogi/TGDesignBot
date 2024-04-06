@@ -1,43 +1,66 @@
 import requests
 import os
+from YaDiskHandler import YaDiskInfo
 import aspose.slides as slides
+from YaDiskHandler.YaDiskInfo import TemplateInfo
+
+
+class SlideInfo:
+    def __init__(self, slide_idx: int, tags: str):
+        self.template_info = None
+        self.slide_idx = slide_idx
+        self.tags = tags
+        self.idx_list = [slide_idx]
+
+    def add_template_info(self, template_info: YaDiskInfo.TemplateInfo):
+        self.template_info = template_info
+
+    def add_id(self, slide_id: int):
+        self.idx_list.append(slide_id)
+
+    def add_indexes(self, indexes: list):
+        self.idx_list += indexes
 
 
 # Takes path to file in local directory and list of templates (pptx files).
 # Install them to a local directory.
 def install_templates(path: str, templates: list):
     if not os.path.exists(path):
-        os.makedirs(path, exist_ok=True)
+        os.makedirs(path)
 
     try:
         for template in templates:
-            response = requests.get(template['file'])
-            with open(path + template['name'], 'wb') as file:
+            if os.path.exists(path + template.name):
+                continue
+            response = requests.get(template.file)
+            with open(path + template.name, 'wb') as file:
                 file.write(response.content)
     except Exception as e:
         for template in templates:
-            if os.path.exists(path + template['name']):
-                os.remove(path + template['file'])
+            if os.path.exists(path + template.name):
+                os.remove(path + template.file)
         raise Exception("Can't install templates")
 
 
-# Takes the path to presentation and returns a list of dictionary with keys:
-#    slide_id: slide position in presentation. Using 0-indexation
-#    tags: text of comment, that slide contains
+# Takes the path to presentation and returns a list of SlideInfo classes. Using 0-indexation.
 def get_slides_information(path: str) -> list:
+    check_directory(path)
     slides_info = []
-    if not os.path.exists(path):
-        raise Exception("No such file or directory")
     with slides.Presentation(path) as presentation:
         for author in presentation.comment_authors:
             for comment in author.comments:
-                slides_info.append({'slide_id': comment.slide.slide_number - 1,
-                                   'tags': comment.text})
+                slides_info.append(SlideInfo(comment.slide.slide_number - 1, comment.text))
     return slides_info
+
+
+def check_directory(path: str):
+    if not os.path.exists(path):
+        raise Exception("No such file or directory")
 
 
 # This function delete all comments from presentation placed in path.
 def remove_all_comments(path: str):
+    check_directory(path)
     with slides.Presentation(path) as presentation:
         # Deletes all comments from the presentation
         for author in presentation.comment_authors:
@@ -47,3 +70,33 @@ def remove_all_comments(path: str):
         presentation.comment_authors.clear()
 
         presentation.save(path, slides.export.SaveFormat.PPTX)
+
+
+def __remove_all_comments__(presentation: slides.Presentation):
+    for author in presentation.comment_authors:
+        author.comments.clear()
+
+    # Deletes all authors
+    presentation.comment_authors.clear()
+
+
+def remove_template(path: str):
+    if not os.path.exists(path):
+        return
+    os.remove(path)
+
+
+# Function takes a path where need to save concateneted slides and SlideInfo struct.
+# If template didn't install, install it. And from last slide to first delete slides
+# by index if no such index in SlideInfo. At the end remove all comments from output presentation.
+def get_template_of_slides(path: str, slide_info: SlideInfo):
+    remove_template(path)
+
+    install_templates("../Templates/", [slide_info.template_info])
+
+    with slides.Presentation(f"../Templates/{slide_info.template_info.name}") as source_pres:
+        for idx in range(source_pres.slides.length - 1, -1, -1):
+            if not (idx in slide_info.idx_list):
+                source_pres.slides.remove_at(idx)
+        __remove_all_comments__(source_pres)
+        source_pres.save(path, slides.export.SaveFormat.PPTX)
