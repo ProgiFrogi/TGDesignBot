@@ -3,7 +3,7 @@ import yadisk
 import YaDiskInfo
 import Tree
 
-ya_disk = yadisk.YaDisk(token='Token')
+ya_disk = yadisk.YaDisk(token='TOKEN')
 
 
 def is_images(item) -> bool:
@@ -64,7 +64,10 @@ def __add_nodes__(directory: str, last_updated_time, tree: Tree):
     for item in ya_disk.listdir(directory):
         if item.is_dir():
             if last_updated_time < item.created:
-                tree.insert(directory, item.name)
+                if directory == "/":
+                    tree.insert("root", item.name)
+                else:
+                    tree.insert(directory[directory.rfind('/') + 1:], item.name)
             __add_nodes__(item.path, last_updated_time, tree)
 
 
