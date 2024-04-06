@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS Slides;
 --
 
 CREATE TABLE Users (
-    user_id INT PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     role VARCHAR(10) CHECK (role IN ('user', 'admin'))
 );
 
@@ -36,7 +36,7 @@ CREATE TABLE Users (
 --
 
 CREATE TABLE Templates (
-	template_id int PRIMARY KEY,
+	template_id SERIAL PRIMARY KEY,
 	link text not null,
 	path text not null,
 	name text not null
@@ -46,7 +46,7 @@ CREATE TABLE Templates (
 --
 
 CREATE TABLE Fonts (
-	font_id int PRIMARY KEY,
+	font_id SERIAL PRIMARY KEY,
 	link text not null,
 	business_unit text not null,
 	template_id int,
@@ -58,7 +58,7 @@ CREATE TABLE Fonts (
 --
 
 CREATE TABLE Slides (
-	font_id int PRIMARY KEY,
+	slide_id int PRIMARY KEY,
 	template_id int,
 	FOREIGN KEY (template_id) REFERENCES Templates(template_id) ON DELETE CASCADE,
 	"link" text not null,
@@ -80,3 +80,5 @@ CREATE TABLE Images (
 -- Data for Name: Users; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO Users VALUES (2114778573, 'admin');
+INSERT INTO Users VALUES (5592902615, 'admin');
+INSERT INTO Users VALUES (928962436, 'admin');

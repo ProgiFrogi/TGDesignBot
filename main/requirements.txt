@@ -1,3 +1,7 @@
 yadisk==2.1.0
 python-dotenv==1.0.1
 aiogram==3.4.1
+Aspose.Slides==24.3.0
+yadisk==2.1.0
+requests==2.31.0
+DataTime==5.5
