@@ -62,7 +62,7 @@ def __delete_nodes__(directory: str, tree: Tree):
 
 def __add_nodes__(directory: str, last_updated_time, tree: Tree):
     for item in ya_disk.listdir(directory):
-        if item.is_dir():
+        if item.is_dir() and (not is_images(item)):
             if last_updated_time < item.created:
                 if directory == "/":
                     tree.insert("root", item.name)
