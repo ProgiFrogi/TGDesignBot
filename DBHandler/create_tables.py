@@ -5,6 +5,14 @@ from config import load_config
 def create_tables():
     """ Create tables in the PostgreSQL database"""
     commands = (
+        """ set statement_timeout = 0; """,
+        """ set lock_timeout = 0; """,
+        """ set client_encoding = 'UTF8'; """,
+        """ set standard_conforming_strings = on; """,
+        """ set check_function_bodies = false; """,
+        """ set client_min_messages = warning; """,
+        """ set default_tablespace = ''; """,
+        """ set default_with_oids = false; """,
         """
             create table if not exists users (
                 user_id bigint primary key,
@@ -53,5 +61,3 @@ def create_tables():
                     cur.execute(command)
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
-
-
