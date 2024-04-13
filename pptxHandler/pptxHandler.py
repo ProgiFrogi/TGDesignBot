@@ -1,5 +1,6 @@
 import requests
 import os
+from pptx import Presentation
 from YaDiskHandler import YaDiskInfo
 import aspose.slides as slides
 from YaDiskHandler.YaDiskInfo import TemplateInfo
@@ -70,6 +71,7 @@ def remove_all_comments(path: str):
         presentation.comment_authors.clear()
 
         presentation.save(path, slides.export.SaveFormat.PPTX)
+    remove_all_watermarks(path)
 
 
 def __remove_all_comments__(presentation: slides.Presentation):
@@ -100,3 +102,18 @@ def get_template_of_slides(path: str, slide_info: SlideInfo):
                 source_pres.slides.remove_at(idx)
         __remove_all_comments__(source_pres)
         source_pres.save(path, slides.export.SaveFormat.PPTX)
+
+    remove_all_watermarks(path)
+
+
+# This function delete all waste, what was added by asponse from presentation.
+def remove_all_watermarks(path: str):
+    check_directory(path)
+
+    presentation = Presentation(path)
+    for slide in presentation.slides:
+        for shape in slide.shapes:
+            if shape.has_text_frame and len(shape.text_frame.paragraphs) > 1:
+                if "Created with Aspose.Slides for Python" in shape.text_frame.paragraphs[1].text:
+                    shape.element.getparent().remove(shape.element)
+    presentation.save(path)
