@@ -1,8 +1,9 @@
-
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types import Message
+
+admins = [5592902615]
 
 # Стартовое меню
 def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
@@ -11,8 +12,9 @@ def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     # kb.button(text="admin menu")
     kb.button(text="Стоп, а что ты умеешь?")
     kb.button(text="Хочу дать обратную связь")
-    kb.button(text="Admin menu")
     kb.adjust(1)
+    if (message.from_user.id in admins):
+        kb.button(text="Админ-панель")
     return kb.as_markup(resize_keyboard=True)
 
 
@@ -29,28 +31,51 @@ def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-
-
-
-# Если получилось
-def admin_menu_step_1() -> ReplyKeyboardMarkup:
+async def choose_category_template(key_list : list, message : Message, can_go_left : bool, can_go_right : bool, can_go_back : bool) -> ReplyKeyboardBuilder:
     kb = ReplyKeyboardBuilder()
-    kb.button(text="Шаблон презентаций")
-    kb.button(text="Готовые слайды о компании")
+    for elem in key_list:
+        kb.add(types.KeyboardButton(text=elem))
+    kb.adjust(3)
+    kb.button(text="Вывести все")
+    kb.adjust(1)
+    if (can_go_right):
+        kb.button(text="Следующий блок")
+    if (can_go_left):
+        kb.button(text="Преведущий блок")
+    kb.adjust(2)
+    if (can_go_back):
+        kb.button(text="Назад")
+    kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-async def choose_category_template(key_list : list, message : Message) -> ReplyKeyboardMarkup:
+async def admin_choose_category_template(key_list : list, message : Message, can_go_left : bool, can_go_right : bool, can_go_back : bool, action : str) -> ReplyKeyboardBuilder:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
-        kb.add(types.KeyboardButton(text=str(elem)))
+        kb.add(types.KeyboardButton(text=elem))
     kb.adjust(3)
-    kb.button(text="Вывести все")
-    kb.button(text="Следующий блок")
-    kb.button(text="Назад")
-    kb.button(text="Главное меню")
+    print('admin_choose')
+    if (action == 'delete'):
+        kb.add(text="Вывести все")
+        kb.adjust(1)
+    if (action == 'add'):
+        kb.add(text="Добавить сюда")
+        kb.adjust(1)
+    if (can_go_right):
+        kb.button(text="Следующий блок")
+    if (can_go_left):
+        kb.button(text="Преведущий блок")
+    kb.adjust(2)
+    if (can_go_back):
+        kb.button(text="Назад")
+    kb.button(text="В главное меню")
     kb.adjust(1)
-    await message.answer(
-        "Выберите папку:",
-        reply_markup=kb.as_markup(resize_keyboard=True)
-    )
+    return kb.as_markup(resize_keyboard=True)
+
+
+def admin_panel(message : Message) -> ReplyKeyboardMarkup:
+    kb = ReplyKeyboardBuilder()
+    kb.button(text="Добавить материал")
+    kb.button(text="Удалить материал")
+    kb.adjust(1)
+    return kb.as_markup(resize_keyboard=True)

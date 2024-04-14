@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-from .handlers import simple_func_handler, main_menu_handler, walker_menu
+from .handlers import simple_func_handler, main_menu_handler, walker_menu, admin_menu_handler
 
 
 #
@@ -16,6 +16,7 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     # Подключение роутеров
     dp.include_router(main_menu_handler.router)
+    dp.include_router(admin_menu_handler.router)
     dp.include_router(simple_func_handler.router)
     dp.include_router(walker_menu.router)
 
