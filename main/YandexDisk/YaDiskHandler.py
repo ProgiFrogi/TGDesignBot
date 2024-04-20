@@ -1,10 +1,9 @@
 import datetime
 import yadisk
 import YaDiskInfo
-from ..Tree import ClassTree as Tree
+from ..Tree.ClassTree import Tree
 
-
-ya_disk = yadisk.YaDisk(token='Token')
+ya_disk = yadisk.YaDisk(token='TOKEN')
 
 
 def is_images(item) -> bool:
@@ -32,11 +31,11 @@ def __search_in_directory__(directory: str,
         if item.is_dir() and not is_images(item):
             __search_in_directory__(item.path, last_updated_time, ya_disk_info)
 
-        if is_images(item):
-            ya_disk_info.add_image(item.path, item.path[: item.path.rfind('/')])
-
         elif last_updated_time < item.created:
-            if is_template(item):
+            if is_images(item):
+                ya_disk_info.add_image(item.path, item.path[: item.path.rfind('/')])
+
+            elif is_template(item):
                 ya_disk_info.add_template(item.name, item.file, item.path[: item.path.rfind('/')])
 
             elif is_font(item):
@@ -63,9 +62,12 @@ def __delete_nodes__(directory: str, tree: Tree):
 
 def __add_nodes__(directory: str, last_updated_time, tree: Tree):
     for item in ya_disk.listdir(directory):
-        if item.is_dir():
+        if item.is_dir() and (not is_images(item)):
             if last_updated_time < item.created:
-                tree.insert(directory, item.name)
+                if directory == "/":
+                    tree.insert("root", item.name)
+                else:
+                    tree.insert(directory[directory.rfind('/') + 1:], item.name)
             __add_nodes__(item.path, last_updated_time, tree)
 
 
@@ -80,6 +82,10 @@ def update_tree(tree: Tree, last_updated_time):
 # Returns an object of class YaDiskInfo.
 def get_all_files_in_disk() -> YaDiskInfo:
     last_updated_time = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
-    ya_disk_info = YaDiskInfo
+    ya_disk_info = YaDiskInfo.YaDiskInfo()
     get_last_added_files(last_updated_time, ya_disk_info)
     return ya_disk_info
+
+
+def upload_to_disk(dest_path: str, local_path: str):
+    check_token(ya_disk)

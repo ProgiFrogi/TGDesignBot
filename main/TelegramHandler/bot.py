@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 
 from .handlers import simple_func_handler, main_menu_handler, walker_menu, admin_menu_handler
 
-
-#
+# Func for including router and start work
 async def main():
     load_dotenv()
     bot = Bot(token=os.getenv('BOT_TOKEN'))
@@ -19,7 +18,6 @@ async def main():
     dp.include_router(admin_menu_handler.router)
     dp.include_router(simple_func_handler.router)
     dp.include_router(walker_menu.router)
-
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
@@ -33,10 +31,4 @@ async def start_bot():
         await print('Exit')
 
 if __name__ == '__main__':
-    # Запуск логирования
-    logging.basicConfig(level=logging.INFO)
-    try:
-    #Запуск бота
-        asyncio.run(main())
-    except:
-        print('Exit')
+    start_bot()
