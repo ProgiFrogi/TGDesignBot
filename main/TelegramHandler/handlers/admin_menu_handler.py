@@ -1,8 +1,12 @@
 import pickle
+import datetime
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_back as check_back
+from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_info
+from Repo.TGDesignBot.main.utility.tg_utility import update_indx as update_user_indx
 from Repo.TGDesignBot.main.Tree.ClassTree import Tree
+from Repo.TGDesignBot.main.YandexDisk import YaDiskHandler
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 from ..keyboards.start_and_simple_button import admin_panel
@@ -16,11 +20,13 @@ router = Router()
 
 # Listing all admins
 admins = [5592902615]
-
 # try:
 tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+    # YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
 # except:
-#     # tree = ClassTree.Tree()
+#     tree = Tree()
+#     YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
+
 
 # how many block names will be displayed
 dist_indx = 1
@@ -66,11 +72,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     can_go_left = await check_left(indx_list_start)
     path = list()
     path.append(message.text)
-    await state.update_data(user_node=path)
-    await state.update_data(indx_list_start=0)
-    await state.update_data(can_go_back=False)
-    await state.update_data(indx_list_end=indx_list_end)
-    await state.update_data(child_list=child_list)
+    await update_user_info(state, path, 0, indx_list_end, False, child_list)
     user_info = await state.get_data()
     action = user_info['state_action']
     reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
@@ -105,9 +107,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
-
-    await state.update_data(indx_list_start=indx_list_start)
-    await state.update_data(indx_list_end=indx_list_end)
+    await update_user_indx(state, indx_list_start, indx_list_end)
 
 @router.message(Command(commands=["prev_block"]))
 @router.message(AdminState.choose_button, F.text.lower() == "преведущий блок")
@@ -133,8 +133,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup=reply_markup
     )
 
-    await state.update_data(indx_list_start=indx_list_start)
-    await state.update_data(indx_list_end=indx_list_end)
+    await update_user_indx(state, indx_list_start, indx_list_end)
 
 @router.message(AdminState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -148,11 +147,6 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     indx_list_start = 0
     indx_list_end = indx_list_start + dist_indx
     child_list = tree.get_children(tree.get_parent(user_data.pop(-1)))
-    await state.update_data(user_node=user_data)
-    await state.update_data(indx_list_start=indx_list_start)
-    await state.update_data(indx_list_end=indx_list_end)
-    await state.update_data(child_list=child_list)
-
     can_go_back = await check_back(user_data)
     can_go_right = await check_right(indx_list_end, len(child_list))
     can_go_left = await check_left(indx_list_start)
@@ -164,7 +158,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
-    await state.update_data(can_go_back=can_go_back)
+    await update_user_info(state, user_data, indx_list_start, indx_list_end, can_go_back, child_list)
 
 @router.message(F.document)
 async def download_file(message : Message, bot : Bot):
@@ -200,17 +194,13 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         return
     user_data = user_info['user_node']
     user_data.append(message.text)
-    await state.update_data(user_node=user_data)
     child_list = tree.get_children(message.text)
     can_go_back = await check_back(user_data)
     can_go_right = await check_right(indx_list_end, len(child_list))
     can_go_left = await check_left(indx_list_start)
-    reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right, can_go_back)
+    reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right, can_go_back, user_info['state_action'])
     await message.answer(
         text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
-    await state.update_data(can_go_back=can_go_back)
-    await state.update_data(child_list=child_list)
-    await state.update_data(indx_list_start=indx_list_start)
-    await state.update_data(indx_list_end=indx_list_end)
+    await update_user_info(state, user_data, indx_list_start, indx_list_end, can_go_back, child_list)

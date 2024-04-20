@@ -56,10 +56,10 @@ async def admin_choose_category_template(key_list : list, message : Message, can
     kb.adjust(3)
     print('admin_choose')
     if (action == 'delete'):
-        kb.add(text="Вывести все")
+        kb.button(text="Вывести все")
         kb.adjust(1)
     if (action == 'add'):
-        kb.add(text="Добавить сюда")
+        kb.button(text="Добавить сюда")
         kb.adjust(1)
     if (can_go_right):
         kb.button(text="Следующий блок")

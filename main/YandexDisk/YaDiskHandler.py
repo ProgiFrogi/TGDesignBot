@@ -1,6 +1,6 @@
 import datetime
 import yadisk
-import YaDiskInfo
+from . import YaDiskInfo
 from ..Tree.ClassTree import Tree
 
 ya_disk = yadisk.YaDisk(token='TOKEN')
