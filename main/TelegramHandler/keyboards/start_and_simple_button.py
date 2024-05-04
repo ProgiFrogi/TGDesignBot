@@ -25,7 +25,6 @@ def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
     kb.button(text="Шаблон презентаций")
     kb.button(text="Готовые слайды о компании")
     kb.button(text="Корпоративные шрифты")
-    kb.button(text="Готовые структуры")
     kb.button(text="Изображения")
     kb.button(text="В главное меню")
     kb.adjust(1)

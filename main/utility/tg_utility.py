@@ -1,5 +1,5 @@
 from aiogram.fsm.state import default_state, StatesGroup, State
-# from Repo.TGDesignBot.main.DBHandler import get_templates_from_directory, get_templates_from_child_directories
+from Repo.TGDesignBot.main.DBHandler import get_templates_from_child_directories
 
 async def can_go_right(indx_list_end : int, len_child_list : int) -> bool:
     return indx_list_end < len_child_list
@@ -21,10 +21,14 @@ async def update_indx(state : State, indx_list_start, indx_list_end) -> None:
     await state.update_data(indx_list_start=indx_list_start)
     await state.update_data(indx_list_end=indx_list_end)
 
-# async def get_list_of_files(state : State) -> list:
-#     user_info = await state.get_data()
-#     list_of_path = user_info['path']
-#
-#     list_of_files = []
-#     if (list_of_path[0] == "Шаблоны презентаций"):
-#         list_of_files = ['3']
+async def get_list_of_files(state : State) -> list:
+    user_info = await state.get_data()
+    list_of_path = user_info['path']
+
+    # Check type of search
+    if (list_of_path[0] == "Шаблон презентаций"):
+        path = '/'.join(list_of_path[1:])
+        print(path)
+        list_of_files = get_templates_from_child_directories(path)
+        print(list_of_files)
+    return list_of_files
