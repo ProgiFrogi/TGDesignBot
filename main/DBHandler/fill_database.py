@@ -16,7 +16,7 @@ def fill_database(yadisk_info: YaDiskInfo) -> None:
         install_templates('../Templates/', [template_info])
         # Get info about slides into current template and add insert them into DB.
         slide_info_list = get_slides_information('../Templates/' + template_info.name)
-        insert_many_slides(template_info, slide_info_list)
+        insert_many_slides(template_id, slide_info_list)
 
     insert_many_fonts(yadisk_info.get_fonts())
     insert_many_images(yadisk_info.get_images())

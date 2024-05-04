@@ -40,6 +40,7 @@ dist_indx = 1
 class AdminState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back, действие
     choose_button = State()
+    choose_file = State()
 
 @router.message(F.text.lower() == "админ-панель", lambda message: IsAdminUser(message.from_user.id) or message.from_user.id in admins)
 async def admin_menu(message: Message, state: FSMContext):

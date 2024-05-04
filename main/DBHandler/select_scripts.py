@@ -19,9 +19,11 @@ def get_user_role(user_id) -> str | None:
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
+
 def IsAdminUser(user_id) -> bool:
     user_role = get_user_role(user_id)
     return user_role == "admin"
+
 
 def __get_list_of_obj__(sql, *obj) -> list:
     config = load_config()
