@@ -33,9 +33,9 @@ class Tree:
             return
         delete_node = [x for x in lst[0].children if x.name == name]
         lst[0].children.remove(delete_node[0])
-        remove_lst = self.get_templates_from_child_directories(lst[0].name)
+        remove_lst = get_templates_from_child_directories(lst[0].name)
         for remove_template in remove_lst:
-            self.delete_template(remove_template[0])
+            delete_template(remove_template[0])
 
     # Get a list of children's names
     def get_children(self, name: str) -> list:

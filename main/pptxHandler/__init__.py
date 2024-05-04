@@ -1,1 +1,1 @@
-from pptxHandler import *
+from .pptxHandler import *
