@@ -1,4 +1,3 @@
-
 import psycopg2
 from Repo.TGDesignBot.main.DBHandler.config import load_config
 

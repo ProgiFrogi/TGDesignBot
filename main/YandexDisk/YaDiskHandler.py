@@ -9,18 +9,27 @@ load_dotenv()
 ya_disk = yadisk.YaDisk(token=('y0_AgAAAAB0mCJzAAu2ugAAAAEDmpiEAABS62wojd1JzLOgYt13FLWLWa_5uQ'))
 
 
+# Takes item from YaDisk and checking is it a photo directory.
 def is_images(item) -> bool:
     return item.is_dir() and ('фото' in item.name.lower() or "photo" in item.name.lower())
 
 
+# Takes item from YaDisk and checking is it a graphics directory.
+def is_graphics(item) -> bool:
+    return item.is_dir() and ('график' in item.name.lower() or "graphic" in item.name.lower())
+
+
+# Takes item from YaDisk and checking is it a template.
 def is_template(item) -> bool:
     return item.name.endswith('.pptx')
 
 
+# Takes item from YaDisk and checking is it a font.
 def is_font(item) -> bool:
     return item.name.endswith('.zip') and ('шрифт' in item.name.lower() or "font" in item.name.lower())
 
 
+# Checking is token valid.
 def check_token(token):
     if not token.check_token():
         raise Exception("Invalid token")
@@ -31,11 +40,11 @@ def __search_in_directory__(directory: str,
                             last_updated_time: datetime.datetime,
                             ya_disk_info: YaDiskInfo):
     for item in ya_disk.listdir(directory):
-        if item.is_dir() and not is_images(item):
+        if item.is_dir() and (not is_images(item)) and (not is_graphics(item)):
             __search_in_directory__(item.path, last_updated_time, ya_disk_info)
 
         elif last_updated_time < item.created:
-            if is_images(item):
+            if is_images(item) or is_graphics(item):
                 ya_disk_info.add_image(item.path, item.path[: item.path.rfind('/')])
 
             elif is_template(item):
@@ -56,6 +65,7 @@ def get_last_added_files(last_updated_time: datetime.datetime, ya_disk_info: YaD
         raise Exception("Can't find any files")
 
 
+# Removes outdated information from the folder tree.
 def __delete_nodes__(directory: str, tree: Tree):
     for item in ya_disk.trash_listdir(directory):
         if item.is_dir():
@@ -63,9 +73,10 @@ def __delete_nodes__(directory: str, tree: Tree):
             tree.delete_node(item.name)
 
 
+# Adds information about new directories to the tree.
 def __add_nodes__(directory: str, last_updated_time, tree: Tree):
     for item in ya_disk.listdir(directory):
-        if item.is_dir() and (not is_images(item)):
+        if item.is_dir() and (not is_images(item)) and (not is_font(item)):
             if last_updated_time < item.created:
                 if directory == "/":
                     tree.insert("root", item.name)
@@ -90,5 +101,9 @@ def get_all_files_in_disk() -> YaDiskInfo:
     return ya_disk_info
 
 
-def upload_to_disk(dest_path: str, local_path: str):
+# Upload a local file to YaDisk by dest_path.
+def upload_to_disk(dest_path: list, local_path: str):
     check_token(ya_disk)
+    path_to_files = list(ya_disk.listdir('/'))[0].path
+    dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + '/'.join(dest_path) + '/' + local_path.split('/')[-1]
+    ya_disk.upload(local_path, dest_path_str)

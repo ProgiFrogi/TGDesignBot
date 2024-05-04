@@ -64,7 +64,7 @@ def insert_template(template_info: YaDiskInfo.TemplateInfo) -> int:
              values (%s, %s, %s)  returning *;"""
     print(template_info.file)
     return __insert_single_value__(sql,
-                                    template_info.file,
+                                   template_info.file,
                                    template_info.path,
                                    template_info.name)
 
@@ -116,3 +116,8 @@ def insert_slides(template_id: int, slide_info: pptxHandler.SlideInfo):
                             slide_info.slide_idx,
                             template_id,
                             slide_info.tags)
+
+
+def insert_many_slides(template_id: int, slides_list: list) -> None:
+    for slide_info in slides_list:
+        insert_slides(template_id, slide_info)

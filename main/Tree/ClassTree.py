@@ -1,3 +1,8 @@
+from Repo.TGDesignBot.main.DBHandler.select_scripts import \
+    get_templates_from_child_directories as get_templates_from_child_directories
+from Repo.TGDesignBot.main.DBHandler.delete_scripts import delete_template as delete_template
+
+
 class Tree:
     # Inner class Node. Have 2 fields: name and an array of children.
     class Node:
@@ -28,6 +33,9 @@ class Tree:
             return
         delete_node = [x for x in lst[0].children if x.name == name]
         lst[0].children.remove(delete_node[0])
+        remove_lst = self.get_templates_from_child_directories(lst[0].name)
+        for remove_template in remove_lst:
+            self.delete_template(remove_template[0])
 
     # Get a list of children's names
     def get_children(self, name: str) -> list:
@@ -47,12 +55,13 @@ class Tree:
         else:
             return lst[0].name
 
+    # Take a name of directory and checking if this directory exists in tree.
     def exist(self, name: str) -> bool:
         lst = []
         self.__search__(self.root, name, lst)
         return len(lst) != 0
 
-    # Searching target Node in tree. If node doesn't exist return fake node with name = 'None'
+    # Searching target Node in tree. If node doesn't exist returns empty list.
     def __search__(self, node: Node, target: str, lst: list):
         if target == 'root':
             lst.append(self.root)
@@ -64,6 +73,8 @@ class Tree:
             else:
                 self.__search__(children, target, lst)
 
+    # Utility function to searching parent of target Node in tree.
+    # Takes current Node, children name (target) and list there need to save answer.
     def __get_parent__(self, node: Node, target: str, lst: list):
         for children in node.children:
             if children.name == target:
