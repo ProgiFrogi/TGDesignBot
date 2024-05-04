@@ -37,6 +37,7 @@ async def choose_category_template(key_list : list, message : Message, can_go_le
         kb.add(types.KeyboardButton(text=elem))
     kb.adjust(3)
     kb.button(text="Вывести все")
+    kb.button(text="Забрать все")
     kb.adjust(1)
     if (can_go_right):
         kb.button(text="Следующий блок")

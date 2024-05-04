@@ -1,9 +1,9 @@
 import requests
 import os
 from pptx import Presentation
-from YaDiskHandler import YaDiskInfo
+from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import YaDiskInfo
 import aspose.slides as slides
-from YaDiskHandler.YaDiskInfo import TemplateInfo
+import Repo.TGDesignBot.main.YandexDisk.YaDiskInfo as YaDiskInfo
 
 
 class SlideInfo:

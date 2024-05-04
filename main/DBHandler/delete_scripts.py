@@ -1,6 +1,6 @@
 
 import psycopg2
-from config import load_config
+from Repo.TGDesignBot.main.DBHandler.config import load_config
 
 
 def delete_template(template_id):

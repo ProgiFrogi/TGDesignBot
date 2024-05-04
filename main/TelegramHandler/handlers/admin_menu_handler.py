@@ -7,6 +7,12 @@ from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_
 from Repo.TGDesignBot.main.utility.tg_utility import update_indx as update_user_indx
 from Repo.TGDesignBot.main.Tree.ClassTree import Tree
 from Repo.TGDesignBot.main.YandexDisk import YaDiskHandler
+from Repo.TGDesignBot.main.DBHandler.select_scripts import IsAdminUser
+from aiogram.utils.chat_action import ChatActionSender
+from aiogram.filters import CommandStart, Command
+from aiogram.utils import markdown
+from aiogram.enums import ParseMode, ChatAction
+import aiohttp
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 from ..keyboards.start_and_simple_button import admin_panel
@@ -35,7 +41,7 @@ class AdminState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back, действие
     choose_button = State()
 
-@router.message(F.text.lower() == "админ-панель", lambda message: message.from_user.id in admins)
+@router.message(F.text.lower() == "админ-панель", lambda message: IsAdminUser(message.from_user.id) or message.from_user.id in admins)
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -44,14 +50,14 @@ async def admin_menu(message: Message, state: FSMContext):
         reply_markup=admin_panel(message)
     )
 
-@router.message(F.text.lower() == "добавить материал", lambda message: message.from_user.id in admins)
+@router.message(F.text.lower() == "добавить материал", AdminState.choose_button)
 async def admin_menu(message: Message, state: FSMContext):
     await state.update_data(state_action="add")
     await message.answer(
         text='Выберете папку',
         reply_markup=choose_category_kb(message)
     )
-@router.message(F.text.lower() == "удалить материал", lambda message: message.from_user.id in admins)
+@router.message(F.text.lower() == "удалить материал", AdminState.choose_button)
 async def admin_menu(message: Message, state: FSMContext):
     await state.update_data(state_action="delete")
     await message.answer(
@@ -181,6 +187,24 @@ async def download_file(message : Message, bot : Bot):
             filename='rofl'
         )
     )
+# @router.message(F.text == '/f')
+# async def send_file_buffered(message : Message, bot : Bot):
+#     url = "https://downloader.disk.yandex.ru/disk/59214287a80c810ed3daa215edd352b4e806ee8b18962a69ee9d72a6feb6bb9d/663661ba/vy7fshuFxAWaw-Bx2nOq6Net6nFmJhzZvhclQiPG7muOSjHW7P1rQeyj-F_CEytsGDgjQuwvObueFjQPKj9XaQ%3D%3D?uid=1956127347&filename=Prez2.pptx&disposition=attachment&hash=&limit=0&content_type=application%2Fvnd.openxmlformats-officedocument.presentationml.presentation&owner_uid=1956127347&fsize=29132&hid=21df18bc9e6be515bb93d560e0a5e4af&media_type=document&tknv=v2&etag=6bdca40baf9ed87761eccbd8707cd3a7"
+#     await message.bot.send_chat_action(
+#         chat_id=message.chat.id,
+#         action=ChatAction.UPLOAD_DOCUMENT
+#     )
+#     async with ChatActionSender.upload_document(
+#
+#     )
+
+    # await bot.send_document(
+    #     chat_id=message.chat.id,
+    #     document=types.FSInputFile(
+    #         path=f"./Data/Buffer/rofl.txt",
+    #         filename='rofl'
+    #     )
+    # )
 
 @router.message(AdminState.choose_button)
 async def first_depth_template_find(message: Message, state: FSMContext):

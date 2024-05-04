@@ -2,8 +2,11 @@ import datetime
 import yadisk
 from . import YaDiskInfo
 from ..Tree.ClassTree import Tree
+import os
+from dotenv import load_dotenv
 
-ya_disk = yadisk.YaDisk(token='TOKEN')
+load_dotenv()
+ya_disk = yadisk.YaDisk(token=('y0_AgAAAAB0mCJzAAu2ugAAAAEDmpiEAABS62wojd1JzLOgYt13FLWLWa_5uQ'))
 
 
 def is_images(item) -> bool:

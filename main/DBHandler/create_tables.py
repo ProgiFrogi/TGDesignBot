@@ -1,5 +1,5 @@
 import psycopg2
-from config import load_config
+from Repo.TGDesignBot.main.DBHandler.config import load_config
 
 
 def create_tables():
@@ -12,7 +12,6 @@ def create_tables():
         """ set check_function_bodies = false; """,
         """ set client_min_messages = warning; """,
         """ set default_tablespace = ''; """,
-        """ set default_with_oids = false; """,
         """
             create table if not exists users (
                 user_id bigint primary key,
@@ -51,7 +50,8 @@ def create_tables():
                 path text not null,
                 link text not null
             );
-        """)
+        """
+    )
     try:
         config = load_config()
         with psycopg2.connect(**config) as conn:
@@ -61,3 +61,6 @@ def create_tables():
                     cur.execute(command)
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+
+if __name__ == "__main__":
+    create_tables()

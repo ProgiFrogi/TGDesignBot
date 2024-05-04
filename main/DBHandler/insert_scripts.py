@@ -1,8 +1,8 @@
 import psycopg2
-from config import load_config
-from YaDiskHandler import YaDiskInfo
-from pptxHandler import pptxHandler
-import select_scripts
+from Repo.TGDesignBot.main.DBHandler.config import load_config
+from Repo.TGDesignBot.main.YandexDisk import YaDiskInfo
+from Repo.TGDesignBot.main.pptxHandler import pptxHandler
+from . import select_scripts as select_scripts
 
 
 # This func takes a sql query and pack of values. Do query with unpacked values
@@ -13,11 +13,14 @@ def __insert_single_value__(sql, *obj) -> int:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 # execute the INSERT statement
+                print('HELP1')
                 cur.execute(sql, obj)
+                print('HELP')
                 row = cur.fetchone()
+                print(row[0])
+                print(row[1])
                 if row:
                     obj_id = row[0]
-
                 # commit the changes to the database
                 conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -59,8 +62,9 @@ def insert_many_users(user_list: list):
 def insert_template(template_info: YaDiskInfo.TemplateInfo) -> int:
     sql = """insert into templates(link, path, name)
              values (%s, %s, %s)  returning *;"""
+    print(template_info.file)
     return __insert_single_value__(sql,
-                                   template_info.file,
+                                    template_info.file,
                                    template_info.path,
                                    template_info.name)
 
