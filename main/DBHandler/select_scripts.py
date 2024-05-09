@@ -47,8 +47,12 @@ def get_templates_from_directory(path: str) -> list:
     sql = "select * from templates where path = %s"
     return __get_list_of_obj__(sql, path)
 
+def get_templates_by_index(index: str) -> list:
+    sql = "select * from templates where template_id = %s"
+    return __get_list_of_obj__(sql, index)
 
-def get_templates_from_child_directories(path: str) -> list:
+
+async def get_templates_from_child_directories(path: str) -> list:
     sql = "select * from templates where path like '%%' || %s || '%%'"
     return __get_list_of_obj__(sql, path)
 
@@ -93,3 +97,13 @@ def get_slides_by_tags_and_template_id(tags: list, template_id: int) -> list:
                 list_of_slides.pop(idx)
                 break
     return list_of_slides
+
+def get_all_tags_by_template_id(template_id: int) -> list:
+    sql = "select tags from slides where template_id = %s"
+    list_of_tags = __get_list_of_obj__(sql, template_id)
+    set_tags = set()
+    for slide in list_of_tags:
+        list_of_tags_from_slide = slide[0].split(';')
+        for tag in list_of_tags_from_slide:
+            set_tags.add(tag)
+    return list(set_tags)

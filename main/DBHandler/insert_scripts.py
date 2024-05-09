@@ -13,9 +13,8 @@ def __insert_single_value__(sql, *obj) -> int:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 # execute the INSERT statement
-                print('HELP1')
+                print(sql)
                 cur.execute(sql, obj)
-                print('HELP')
                 row = cur.fetchone()
                 print(row[0])
                 print(row[1])
@@ -64,7 +63,7 @@ def insert_template(template_info: YaDiskInfo.TemplateInfo) -> int:
              values (%s, %s, %s)  returning *;"""
     print(template_info.file)
     return __insert_single_value__(sql,
-                                    template_info.file,
+                                   template_info.file,
                                    template_info.path,
                                    template_info.name)
 
@@ -78,13 +77,13 @@ def insert_many_templates(template_list: list):
 # Insert a new font into the fonts table
 def insert_font(font_info: YaDiskInfo.FontInfo):
     list_of_template_id = select_scripts.get_templates_from_directory(font_info.path)
-    sql = """insert into font(link, path, template_id) 
+    sql = """insert into fonts(link, path, template_id) 
              values (%s, %s, %s)  returning *"""
     for template_id in list_of_template_id:
         __insert_single_value__(sql,
                                 font_info.file,
                                 font_info.path,
-                                template_id)
+                                template_id[0])
 
 
 # Insert multiply fonts into the fonts table
@@ -99,7 +98,7 @@ def insert_image(image_info: YaDiskInfo.ImageInfo):
              values (%s, %s, %s) returning *;"""
     for template_id in list_of_template_id:
         __insert_single_value__(sql,
-                                template_id,
+                                int(template_id[0]),
                                 image_info.path,
                                 image_info.position)
 
@@ -116,3 +115,8 @@ def insert_slides(template_id: int, slide_info: pptxHandler.SlideInfo):
                             slide_info.slide_idx,
                             template_id,
                             slide_info.tags)
+
+
+def insert_many_slides(template_id: int, slides_list: list) -> None:
+    for slide_info in slides_list:
+        insert_slides(template_id, slide_info)

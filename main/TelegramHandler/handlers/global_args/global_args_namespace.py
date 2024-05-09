@@ -1,5 +1,4 @@
 import pickle
-from Repo.TGDesignBot.main.Tree.ClassTree import Tree
 
 # try:
 tree_obj = pickle.load(open("Tree/ObjectTree.pkl", "rb"))

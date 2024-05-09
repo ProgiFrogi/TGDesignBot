@@ -19,6 +19,8 @@ class SlideInfo:
     def add_id(self, slide_id: int):
         self.idx_list.append(slide_id)
 
+    def add_index(self, index: int):
+        self.idx_list.append(index)
     def add_indexes(self, indexes: list):
         self.idx_list += indexes
 
@@ -45,7 +47,7 @@ def install_templates(path: str, templates: list):
 
 # Takes the path to presentation and returns a list of SlideInfo classes. Using 0-indexation.
 def get_slides_information(path: str) -> list:
-    check_directory(path)
+    exists(path)
     slides_info = []
     with slides.Presentation(path) as presentation:
         for author in presentation.comment_authors:
@@ -54,22 +56,20 @@ def get_slides_information(path: str) -> list:
     return slides_info
 
 
-def check_directory(path: str):
+def exists(path: str):
     if not os.path.exists(path):
         raise Exception("No such file or directory")
 
 
 # This function delete all comments from presentation placed in path.
 def remove_all_comments(path: str):
-    check_directory(path)
+    exists(path)
     with slides.Presentation(path) as presentation:
         # Deletes all comments from the presentation
         for author in presentation.comment_authors:
             author.comments.clear()
-
         # Deletes all authors
         presentation.comment_authors.clear()
-
         presentation.save(path, slides.export.SaveFormat.PPTX)
     remove_all_watermarks(path)
 
@@ -77,7 +77,6 @@ def remove_all_comments(path: str):
 def __remove_all_comments__(presentation: slides.Presentation):
     for author in presentation.comment_authors:
         author.comments.clear()
-
     # Deletes all authors
     presentation.comment_authors.clear()
 
@@ -88,15 +87,15 @@ def remove_template(path: str):
     os.remove(path)
 
 
-# Function takes a path where need to save concateneted slides and SlideInfo struct.
+# Function takes a path where need to save concatenated slides and SlideInfo struct.
 # If template didn't install, install it. And from last slide to first delete slides
 # by index if no such index in SlideInfo. At the end remove all comments from output presentation.
 def get_template_of_slides(path: str, slide_info: SlideInfo):
     remove_template(path)
 
-    install_templates("../Templates/", [slide_info.template_info])
+    install_templates("./Data/Templates/", [slide_info.template_info])
 
-    with slides.Presentation(f"../Templates/{slide_info.template_info.name}") as source_pres:
+    with slides.Presentation(f"./Data/Templates/{slide_info.template_info.name}") as source_pres:
         for idx in range(source_pres.slides.length - 1, -1, -1):
             if not (idx in slide_info.idx_list):
                 source_pres.slides.remove_at(idx)
@@ -108,7 +107,7 @@ def get_template_of_slides(path: str, slide_info: SlideInfo):
 
 # This function delete all waste, what was added by asponse from presentation.
 def remove_all_watermarks(path: str):
-    check_directory(path)
+    exists(path)
 
     presentation = Presentation(path)
     for slide in presentation.slides:
