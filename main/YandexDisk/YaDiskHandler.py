@@ -5,7 +5,7 @@ from Repo.TGDesignBot.main.Tree.ClassTree import Tree
 from dotenv import load_dotenv
 
 load_dotenv()
-ya_disk = yadisk.YaDisk(token=('y0_AgAAAAB0mCJzAAu2ugAAAAEDmpiEAABS62wojd1JzLOgYt13FLWLWa_5uQ'))
+ya_disk = yadisk.YaDisk(token=('TOKEN')
 
 
 # Takes item from YaDisk and checking is it a photo directory.
