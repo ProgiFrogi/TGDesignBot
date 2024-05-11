@@ -4,10 +4,13 @@ import yadisk
 from . import YaDiskInfo
 from Repo.TGDesignBot.main.Tree.ClassTree import Tree
 from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import YaDiskInfo
-from Repo.TGDesignBot.main.Tree.DBHandler.fill_database import fill_database
-from Repo.TGDesignBot.main.Tree.DBHandler.delete_scripts import delete_template
-from Repo.TGDesignBot.main.Tree.DBHandler.select_scripts import get_template_id_by_name
+from Repo.TGDesignBot.main.DBHandler.fill_database import fill_database
+from Repo.TGDesignBot.main.DBHandler.delete_scripts import delete_template
+from Repo.TGDesignBot.main.DBHandler.select_scripts import get_template_id_by_name
+from Repo.TGDesignBot.main.pptxHandler import remove_template
 from dotenv import load_dotenv
+
+from .YaDiskInfo import TemplateInfo
 
 load_dotenv()
 ya_disk = yadisk.YaDisk(token=('TOKEN'))
@@ -153,3 +156,16 @@ def update_tree_and_db(tree: Tree, last_updated_time: datetime.datetime):
     update_tree(tree, last_updated_time)
     update_db(time_copy)
 
+
+# Delete file (not directory) from YaDisk.
+def delete_from_disk(path: str):
+    check_token(ya_disk)
+    try:
+        if path.endswith('.pptx'):
+            remove_template('./Data/Templates/' + path[path.rfind('/') + 1:])
+            template_info = TemplateInfo(path[path.rfind('/') + 1:], path[:path.rfind('/')])
+            template_id = get_template_id_by_name(template_info)
+            delete_template(template_id)
+        ya_disk.delete(path)
+    except Exception as e:
+        raise "No such file or directory"
