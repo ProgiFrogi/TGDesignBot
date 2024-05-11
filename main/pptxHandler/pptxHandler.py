@@ -21,6 +21,7 @@ class SlideInfo:
 
     def add_index(self, index: int):
         self.idx_list.append(index)
+
     def add_indexes(self, indexes: list):
         self.idx_list += indexes
 

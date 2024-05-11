@@ -10,7 +10,6 @@ from ..keyboards.start_and_simple_button import start_menu_kb, choose_category_k
 router = Router()
 
 
-
 class UserStates(StatesGroup):
     in_main_menu = State()
     in_choose_category = State()
@@ -29,6 +28,7 @@ async def cmd_start_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
+
 @router.message(StateFilter(default_state), Command(commands=["menu"]))
 @router.message(default_state, F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
@@ -37,6 +37,8 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         text="Вы и так в главном меню...",
         reply_markup=start_menu_kb(message)
     )
+
+
 @router.message(Command(commands=["menu"]))
 @router.message(F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
@@ -46,6 +48,7 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
+
 @router.message(StateFilter(None), Command(commands=["choose_category"]))
 @router.message(F.text.lower() == "готовлю презентацию сам, нужны материалы")
 async def choose_category_handler(message: Message, state: FSMContext):
@@ -54,5 +57,3 @@ async def choose_category_handler(message: Message, state: FSMContext):
         reply_markup=choose_category_kb(message)
     )
     await state.set_state(UserStates.in_choose_category)
-
-

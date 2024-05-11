@@ -7,7 +7,6 @@ from Repo.TGDesignBot.main.DBHandler.select_scripts import get_fonts_by_template
 from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import TemplateInfo
 from aiogram import types
 
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -20,12 +19,15 @@ from Repo.TGDesignBot.main.pptxHandler import get_template_of_slides, SlideInfo,
 router = Router()
 
 dist_indx = 1
+
+
 class WalkerState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back
     choose_button = State()
     choose_category = State()
     choose_file = State()
     choose_tags = State()
+
 
 @router.message(WalkerState.choose_file, F.text.lower() == "следующий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -41,7 +43,8 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     can_go_right = await check_right(indx_list_end, len(file_name_list))
     can_go_left = await check_left(indx_list_start)
-    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
+    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
+                                        can_go_right)
     await message.answer(
         text="Выберете одну из файлов",
         reply_markup=reply_markup
@@ -49,7 +52,8 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_file, F.text.lower() == "преведущий блок")
+
+@router.message(WalkerState.choose_file, F.text.lower() == "предыдущий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -64,13 +68,15 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     can_go_right = await check_right(indx_list_end, len(file_name_list))
     can_go_left = await check_left(indx_list_start)
 
-    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
+    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
+                                        can_go_right)
     await message.answer(
         text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
 
     await update_user_indx(state, indx_list_start, indx_list_end)
+
 
 @router.message(WalkerState.choose_file, F.text.lower() == "получить шрифты")
 @router.message(WalkerState.choose_tags, F.text.lower() == "получить шрифты")
@@ -111,7 +117,6 @@ async def send_info(message: types.Message, state: FSMContext):
     )
 
 
-
 @router.message(WalkerState.choose_tags, F.text.lower() == "следующий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
@@ -135,7 +140,8 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_tags, F.text.lower() == "преведущий блок")
+
+@router.message(WalkerState.choose_tags, F.text.lower() == "предыдущий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -159,6 +165,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
+
 @router.message(WalkerState.choose_tags, F.text.lower() == "очистить теги")
 async def clear_tags(message: Message, state: FSMContext):
     # Clear user_tags
@@ -178,6 +185,8 @@ async def clear_tags(message: Message, state: FSMContext):
         text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
         reply_markup=reply_markup
     )
+
+
 @router.message(WalkerState.choose_tags, F.text.lower() == "найти слайды по введеным тегам")
 async def clear_tags(message: Message, state: FSMContext):
     user_info = await state.get_data()
@@ -266,6 +275,7 @@ async def choose_tags(message: Message, state: FSMContext):
         reply_markup=reply_markup
     )
 
+
 @router.message(WalkerState.choose_file)
 async def choose_category(message: Message, state: FSMContext):
     global tree, dist_indx
@@ -327,6 +337,3 @@ async def choose_category(message: Message, state: FSMContext):
             text="Введите ваши теги через ';' или выберете их из предложенных ниже",
             reply_markup=reply_markup
         )
-
-
-

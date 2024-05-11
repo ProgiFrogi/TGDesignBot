@@ -13,6 +13,7 @@ from aiogram.fsm.state import default_state, StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 from ..keyboards.start_and_simple_button import choose_category_template
 from ..keyboards.choose_file_keyboard import choose_file_kb
+
 router = Router()
 
 # try:
@@ -21,10 +22,12 @@ tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
 #     # tree = ClassTree.Tree()
 dist_indx = 1
 
+
 class WalkerState(StatesGroup):
     choose_button = State()
     choose_category = State()
     choose_file = State()
+
 
 # If user in root
 @router.message(Command(commands=["depth_1"]))
@@ -58,6 +61,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup=reply_markup
     )
 
+
 @router.message(WalkerState.choose_button, F.text.lower() == "следующий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
@@ -83,7 +87,8 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_button, F.text.lower() == "преведущий блок")
+
+@router.message(WalkerState.choose_button, F.text.lower() == "предыдущий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
     user_info = await state.get_data()
@@ -107,6 +112,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
 
     await update_user_indx(state, indx_list_start, indx_list_end)
+
 
 @router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -133,6 +139,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
     await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
 
+
 @router.message(WalkerState.choose_button, F.text.lower() == "вывести все")
 async def output_files(message: Message, state: FSMContext):
     global dist_indx
@@ -150,12 +157,14 @@ async def output_files(message: Message, state: FSMContext):
     can_go_right = await check_right(indx_list_end, len(file_name_list))
     can_go_left = await check_left(indx_list_start)
 
-    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
+    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
+                                        can_go_right)
     await from_button_to_file(message, state, files_list, file_name_list, WalkerState.choose_file)
     await message.answer(
         text="Выберете один из файлов",
         reply_markup=reply_markup
     )
+
 
 @router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):

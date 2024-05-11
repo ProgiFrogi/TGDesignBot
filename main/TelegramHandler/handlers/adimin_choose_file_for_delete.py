@@ -10,11 +10,14 @@ from ..keyboards.choose_file_keyboard import choose_file_kb
 router = Router()
 
 dist_indx = 1
+
+
 class AdminState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back
     choose_button = State()
     choose_category = State()
     choose_file = State()
+
 
 @router.message(AdminState.choose_file, F.text.lower() == "следующий блок")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -30,7 +33,8 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     can_go_right = await check_right(indx_list_end, len(file_name_list))
     can_go_left = await check_left(indx_list_start)
-    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
+    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
+                                        can_go_right)
     await message.answer(
         text="Выберете один из файлов",
         reply_markup=reply_markup

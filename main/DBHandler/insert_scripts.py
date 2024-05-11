@@ -61,9 +61,7 @@ def insert_many_users(user_list: list):
 def insert_template(template_info: YaDiskInfo.TemplateInfo) -> int:
     sql = """insert into templates(link, path, name)
              values (%s, %s, %s)  returning *;"""
-    print(template_info.file)
     return __insert_single_value__(sql,
-                                   template_info.file,
                                    template_info.path,
                                    template_info.name)
 
@@ -81,7 +79,6 @@ def insert_font(font_info: YaDiskInfo.FontInfo):
              values (%s, %s, %s)  returning *"""
     for template_id in list_of_template_id:
         __insert_single_value__(sql,
-                                font_info.file,
                                 font_info.path,
                                 template_id[0])
 

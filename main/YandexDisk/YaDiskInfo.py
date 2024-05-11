@@ -1,13 +1,11 @@
 class TemplateInfo:
-    def __init__(self, name: str, file: str, path: str):
+    def __init__(self, name: str, path: str):
         self.name = name
-        self.file = file
         self.path = path
 
 
 class FontInfo:
-    def __init__(self, file: str, path: str):
-        self.file = file
+    def __init__(self, path: str):
         self.path = path
 
 
@@ -24,10 +22,10 @@ class YaDiskInfo:
         self.images = []
 
     def add_template(self, name: str, file: str, path: str):
-        self.templates.append(TemplateInfo(name, file, path))
+        self.templates.append(TemplateInfo(name, path))
 
     def add_font(self, file: str, path: str):
-        self.fonts.append(FontInfo(file, path))
+        self.fonts.append(FontInfo(path))
 
     def add_image(self, position: str, path: str):
         self.images.append(ImageInfo(position, path))

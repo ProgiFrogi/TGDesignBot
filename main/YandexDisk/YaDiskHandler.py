@@ -1,11 +1,16 @@
+import copy
 import datetime
 import yadisk
 from . import YaDiskInfo
 from Repo.TGDesignBot.main.Tree.ClassTree import Tree
+from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import YaDiskInfo
+from Repo.TGDesignBot.main.Tree.DBHandler.fill_database import fill_database
+from Repo.TGDesignBot.main.Tree.DBHandler.delete_scripts import delete_template
+from Repo.TGDesignBot.main.Tree.DBHandler.select_scripts import get_template_id_by_name
 from dotenv import load_dotenv
 
 load_dotenv()
-ya_disk = yadisk.YaDisk(token=('y0_AgAAAAB0mCJzAAu2ugAAAAEDmpiEAABS62wojd1JzLOgYt13FLWLWa_5uQ'))
+ya_disk = yadisk.YaDisk(token=('TOKEN'))
 
 
 # Takes item from YaDisk and checking is it a photo directory.
@@ -34,7 +39,7 @@ def check_token(token):
         raise Exception("Invalid token")
 
 
-# Recursive find in YDisk. Takes the current directory and find files in it.
+# Recursive find in YaDisk. Takes the current directory and find files in it.
 def __search_in_directory__(directory: str,
                             last_updated_time: datetime.datetime,
                             ya_disk_info: YaDiskInfo):
@@ -47,10 +52,10 @@ def __search_in_directory__(directory: str,
                 ya_disk_info.add_image(item.path, item.path[: item.path.rfind('/')])
 
             elif is_template(item):
-                ya_disk_info.add_template(item.name, item.file, item.path[: item.path.rfind('/')])
+                ya_disk_info.add_template(item.name, item.path[: item.path.rfind('/')])
 
             elif is_font(item):
-                ya_disk_info.add_font(item.file, item.path[: item.path.rfind('/')])
+                ya_disk_info.add_font(item.path[: item.path.rfind('/')])
 
 
 # Function take an empty lists ant trying to bring from YDisc all files created from last
@@ -62,6 +67,19 @@ def get_last_added_files(last_updated_time: datetime.datetime, ya_disk_info: YaD
     except Exception as e:
         ya_disk_info.clear()
         raise Exception("Can't find any files")
+
+
+# Recursive find deleted templates from last update in trash box of YaDisk.
+# Takes the current directory and find files in it.
+def __get_templates_from_trash__(directory: str,
+                                 last_updated_time: datetime.datetime,
+                                 ya_disk_info: YaDiskInfo):
+    for item in ya_disk.trash_listdir(directory):
+        if item.is_dir() and (not is_images(item)) and (not is_graphics(item)):
+            __get_templates_from_trash__(item.path, last_updated_time, ya_disk_info)
+
+        elif last_updated_time < item.deleted and is_template(item):
+            ya_disk_info.add_template(item.name, item.path[: item.path.rfind('/')])
 
 
 # Removes outdated information from the folder tree.
@@ -84,6 +102,7 @@ def __add_nodes__(directory: str, last_updated_time, tree: Tree):
             __add_nodes__(item.path, last_updated_time, tree)
 
 
+# Update actuality of the current tree object.
 def update_tree(tree: Tree, last_updated_time):
     check_token(ya_disk)
     __delete_nodes__('/', tree)
@@ -95,7 +114,7 @@ def update_tree(tree: Tree, last_updated_time):
 # Returns an object of class YaDiskInfo.
 def get_all_files_in_disk() -> YaDiskInfo:
     last_updated_time = datetime.datetime.min.replace(tzinfo=datetime.timezone.utc)
-    ya_disk_info = YaDiskInfo.YaDiskInfo()
+    ya_disk_info = YaDiskInfo()
     get_last_added_files(last_updated_time, ya_disk_info)
     return ya_disk_info
 
@@ -106,3 +125,31 @@ def upload_to_disk(dest_path: list, local_path: str):
     path_to_files = list(ya_disk.listdir('/'))[0].path
     dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + '/'.join(dest_path) + '/' + local_path.split('/')[-1]
     ya_disk.upload(local_path, dest_path_str)
+
+
+# Takes a list of directories and name of file (for example: ['dir', 'innerDir', 'file.txt']).
+def get_download_link(path_list: list) -> str:
+    check_token(ya_disk)
+    path_to_files = list(ya_disk.listdir('/'))[0].path
+    path = path_to_files[:path_to_files.rfind('/') + 1] + "/".join(path_list)
+    return ya_disk.get_download_link(path)
+
+
+# Update actuality of database. Insert new files and removing deleted templates.
+def update_db(last_updated_time: datetime.datetime):
+    ya_disk_info = YaDiskInfo()
+    get_last_added_files(last_updated_time, ya_disk_info)
+    fill_database(ya_disk_info)
+    ya_disk_info.clear()
+    __get_templates_from_trash__('/', last_updated_time, ya_disk_info)
+    for template_info in ya_disk_info.templates:
+        template_id = get_template_id_by_name(template_info)
+        delete_template(template_id)
+
+
+# Update actuality of database and tree.
+def update_tree_and_db(tree: Tree, last_updated_time: datetime.datetime):
+    time_copy = copy.deepcopy(last_updated_time)
+    update_tree(tree, last_updated_time)
+    update_db(time_copy)
+

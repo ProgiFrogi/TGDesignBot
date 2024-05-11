@@ -1,6 +1,8 @@
 import psycopg2
 from Repo.TGDesignBot.main.DBHandler.config import load_config
 
+from main.YandexDisk.YaDiskInfo import TemplateInfo
+
 
 def get_user_role(user_id) -> str | None:
     sql = "select role from users where user_id = %s"
@@ -19,9 +21,11 @@ def get_user_role(user_id) -> str | None:
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
-def IsAdminUser(user_id) -> bool:
+
+def is_user_admin(user_id) -> bool:
     user_role = get_user_role(user_id)
     return user_role == "admin"
+
 
 def __get_list_of_obj__(sql, *obj) -> list:
     config = load_config()
@@ -46,6 +50,12 @@ def __get_list_of_obj__(sql, *obj) -> list:
 def get_templates_from_directory(path: str) -> list:
     sql = "select * from templates where path = %s"
     return __get_list_of_obj__(sql, path)
+
+
+def get_template_id_by_name(template_info: TemplateInfo) -> int:
+    sql = "select * from templates where path = %s and name = %s"
+    return int(__get_list_of_obj__(sql, template_info.path, template_info.name)[0])
+
 
 def get_templates_by_index(index: str) -> list:
     sql = "select * from templates where template_id = %s"
@@ -97,6 +107,7 @@ def get_slides_by_tags_and_template_id(tags: list, template_id: int) -> list:
                 list_of_slides.pop(idx)
                 break
     return list_of_slides
+
 
 def get_all_tags_by_template_id(template_id: int) -> list:
     sql = "select tags from slides where template_id = %s"

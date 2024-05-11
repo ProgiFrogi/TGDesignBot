@@ -1,11 +1,12 @@
 from Repo.TGDesignBot.main.DBHandler.insert_scripts import (insert_many_slides,
                                                             insert_many_fonts,
                                                             insert_template,
-                                                            insert_many_users,
                                                             insert_many_images)
 from Repo.TGDesignBot.main.YandexDisk import YaDiskInfo
 from Repo.TGDesignBot.main.YandexDisk import YaDiskHandler
-from Repo.TGDesignBot.main.pptxHandler.pptxHandler import install_templates, get_slides_information
+from Repo.TGDesignBot.main.pptxHandler.pptxHandler import (install_templates,
+                                                           get_slides_information)
+
 
 def fill_database(yadisk_info: YaDiskInfo) -> None:
     # For each template insert into DB and install it in local directory.
@@ -19,5 +20,3 @@ def fill_database(yadisk_info: YaDiskInfo) -> None:
 
     insert_many_fonts(yadisk_info.get_fonts())
     insert_many_images(yadisk_info.get_images())
-
-    insert_many_users([[5592902615, 'admin']])

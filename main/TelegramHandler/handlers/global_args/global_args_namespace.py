@@ -9,6 +9,7 @@ indx_list_start = 0
 indx_list_end = indx_list_start + dist_indx
 child_list = list()
 
+
 async def set_default():
     global indx_list_start, indx_list_end
     indx_list_start = 0

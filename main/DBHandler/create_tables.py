@@ -20,7 +20,6 @@ def create_tables():
         """,
         """ create table if not exists templates (
                 template_id serial primary key,
-                link text not null,
                 path text not null,
                 name text not null
             );
@@ -28,7 +27,6 @@ def create_tables():
         """
             create table if not exists fonts (
                 font_id serial primary key,
-                link text not null,
                 path text not null,
                 template_id serial,
                 foreign key (template_id) references templates(template_id) on delete cascade
@@ -48,7 +46,6 @@ def create_tables():
                 template_id serial,
                 foreign key (template_id) references templates(template_id) on delete cascade,
                 path text not null,
-                link text not null
             );
         """
     )
@@ -61,6 +58,7 @@ def create_tables():
                     cur.execute(command)
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+
 
 if __name__ == "__main__":
     create_tables()
