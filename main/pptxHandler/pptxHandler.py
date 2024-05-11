@@ -53,7 +53,8 @@ def get_slides_information(path: str) -> list:
     with slides.Presentation(path) as presentation:
         for author in presentation.comment_authors:
             for comment in author.comments:
-                slides_info.append(SlideInfo(comment.slide.slide_number - 1, comment.text))
+                slides_info.append(SlideInfo(comment.slide.slide_number - 1,
+                                             ";".join(comment.text.split())))
     return slides_info
 
 
