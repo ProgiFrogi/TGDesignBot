@@ -21,10 +21,10 @@ class YaDiskInfo:
         self.fonts = []
         self.images = []
 
-    def add_template(self, name: str, file: str, path: str):
+    def add_template(self, name: str, path: str):
         self.templates.append(TemplateInfo(name, path))
 
-    def add_font(self, file: str, path: str):
+    def add_font(self, path: str):
         self.fonts.append(FontInfo(path))
 
     def add_image(self, position: str, path: str):

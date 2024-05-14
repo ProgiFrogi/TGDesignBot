@@ -1,8 +1,6 @@
 import psycopg2
 from Repo.TGDesignBot.main.DBHandler.config import load_config
 
-from main.YandexDisk.YaDiskInfo import TemplateInfo
-
 
 def get_user_role(user_id) -> str | None:
     sql = "select role from users where user_id = %s"
@@ -52,9 +50,9 @@ def get_templates_from_directory(path: str) -> list:
     return __get_list_of_obj__(sql, path)
 
 
-def get_template_id_by_name(template_info: TemplateInfo) -> int:
+def get_template_id_by_name(path: str, name: str) -> int:
     sql = "select * from templates where path = %s and name = %s"
-    return int(__get_list_of_obj__(sql, template_info.path, template_info.name)[0])
+    return int(__get_list_of_obj__(sql, path, name)[0])
 
 
 def get_templates_by_index(index: str) -> list:

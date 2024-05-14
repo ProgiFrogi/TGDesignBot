@@ -1,13 +1,13 @@
 import copy
 import datetime
+import os
+
 import yadisk
-from . import YaDiskInfo
+from Repo.TGDesignBot.main.DBHandler import get_template_id_by_name
 from Repo.TGDesignBot.main.Tree.ClassTree import Tree
 from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import YaDiskInfo
 from Repo.TGDesignBot.main.DBHandler.fill_database import fill_database
-from Repo.TGDesignBot.main.DBHandler.delete_scripts import delete_template
-from Repo.TGDesignBot.main.DBHandler.select_scripts import get_template_id_by_name
-from Repo.TGDesignBot.main.pptxHandler import remove_template
+from Repo.TGDesignBot.main.DBHandler import delete_template
 from dotenv import load_dotenv
 
 from .YaDiskInfo import TemplateInfo
@@ -130,11 +130,8 @@ def upload_to_disk(dest_path: list, local_path: str):
     ya_disk.upload(local_path, dest_path_str)
 
 
-# Takes a list of directories and name of file (for example: ['dir', 'innerDir', 'file.txt']).
-def get_download_link(path_list: list) -> str:
+def get_download_link(path: str) -> str:
     check_token(ya_disk)
-    path_to_files = list(ya_disk.listdir('/'))[0].path
-    path = path_to_files[:path_to_files.rfind('/') + 1] + "/".join(path_list)
     return ya_disk.get_download_link(path)
 
 
@@ -146,7 +143,7 @@ def update_db(last_updated_time: datetime.datetime):
     ya_disk_info.clear()
     __get_templates_from_trash__('/', last_updated_time, ya_disk_info)
     for template_info in ya_disk_info.templates:
-        template_id = get_template_id_by_name(template_info)
+        template_id = get_template_id_by_name(template_info.path, template_info.name)
         delete_template(template_id)
 
 
@@ -162,9 +159,9 @@ def delete_from_disk(path: str):
     check_token(ya_disk)
     try:
         if path.endswith('.pptx'):
-            remove_template('./Data/Templates/' + path[path.rfind('/') + 1:])
+            os.remove('./Data/Templates/' + path[path.rfind('/') + 1:])
             template_info = TemplateInfo(path[path.rfind('/') + 1:], path[:path.rfind('/')])
-            template_id = get_template_id_by_name(template_info)
+            template_id = get_template_id_by_name(template_info.path, template_info.name)
             delete_template(template_id)
         ya_disk.delete(path)
     except Exception as e:

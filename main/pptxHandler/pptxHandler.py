@@ -1,9 +1,9 @@
 import requests
 import os
 from pptx import Presentation
-from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import YaDiskInfo
+from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import TemplateInfo
+from Repo.TGDesignBot.main.YandexDisk.YaDiskHandler import get_download_link
 import aspose.slides as slides
-import Repo.TGDesignBot.main.YandexDisk.YaDiskInfo as YaDiskInfo
 
 
 class SlideInfo:
@@ -13,7 +13,7 @@ class SlideInfo:
         self.tags = tags
         self.idx_list = [slide_idx]
 
-    def add_template_info(self, template_info: YaDiskInfo.TemplateInfo):
+    def add_template_info(self, template_info: TemplateInfo):
         self.template_info = template_info
 
     def add_id(self, slide_id: int):
@@ -36,7 +36,7 @@ def install_templates(path: str, templates: list):
         for template in templates:
             if os.path.exists(path + template.name):
                 continue
-            response = requests.get(template.file)
+            response = requests.get(get_download_link(template.path + '/' + template.name))
             with open(path + template.name, 'wb') as file:
                 file.write(response.content)
     except Exception as e:

@@ -3,3 +3,7 @@ __pycache__
 ../../../Repo/TGDesignBot/main/Data/DataFromUser
 ../Templates
 ../__pycache__
+Data/Templates/
+Data/slides/
+Data/forZip/
+Data/Buffer/

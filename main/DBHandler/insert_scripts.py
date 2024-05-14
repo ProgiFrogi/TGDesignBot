@@ -1,7 +1,7 @@
 import psycopg2
 from Repo.TGDesignBot.main.DBHandler.config import load_config
-from Repo.TGDesignBot.main.YandexDisk import YaDiskInfo
-from Repo.TGDesignBot.main.pptxHandler import pptxHandler
+from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import TemplateInfo, FontInfo, ImageInfo
+from ..pptxHandler import pptxHandler
 from . import select_scripts as select_scripts
 
 
@@ -58,7 +58,7 @@ def insert_many_users(user_list: list):
 
 
 # Insert a new template into the templates table. Return template_id
-def insert_template(template_info: YaDiskInfo.TemplateInfo) -> int:
+def insert_template(template_info: TemplateInfo) -> int:
     sql = """insert into templates(link, path, name)
              values (%s, %s, %s)  returning *;"""
     return __insert_single_value__(sql,
@@ -73,7 +73,7 @@ def insert_many_templates(template_list: list):
 
 
 # Insert a new font into the fonts table
-def insert_font(font_info: YaDiskInfo.FontInfo):
+def insert_font(font_info: FontInfo):
     list_of_template_id = select_scripts.get_templates_from_directory(font_info.path)
     sql = """insert into fonts(link, path, template_id) 
              values (%s, %s, %s)  returning *"""
@@ -89,7 +89,7 @@ def insert_many_fonts(font_list: list):
         insert_font(font_info)
 
 
-def insert_image(image_info: YaDiskInfo.ImageInfo):
+def insert_image(image_info: ImageInfo):
     list_of_template_id = select_scripts.get_templates_from_directory(image_info.path)
     sql = """insert into images(template_id, path, link)
              values (%s, %s, %s) returning *;"""

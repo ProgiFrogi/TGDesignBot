@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 from dotenv import load_dotenv
@@ -6,8 +5,8 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from Repo.TGDesignBot.main.TelegramHandler.handlers import simple_func_handler, main_menu_handler, walker_menu, \
-    admin_menu_handler, choose_file
+from Repo.TGDesignBot.main.TelegramHandler.handlers import simple_func_handler, main_menu_handler, admin_menu_handler, choose_file
+from Repo.TGDesignBot.main.TelegramHandler.handlers import walker_menu
 
 
 # Func for including router and start work

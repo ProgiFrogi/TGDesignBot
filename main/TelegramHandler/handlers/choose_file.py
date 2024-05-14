@@ -2,7 +2,7 @@ from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right
     send_file_from_local
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import update_indx as update_user_indx
-from Repo.TGDesignBot.main.DBHandler.select_scripts import get_fonts_by_template_id, get_all_tags_by_template_id, \
+from Repo.TGDesignBot.main.DBHandler import get_fonts_by_template_id, get_all_tags_by_template_id, \
     get_slides_by_tags_and_template_id, get_templates_by_index
 from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import TemplateInfo
 from aiogram import types
@@ -15,6 +15,7 @@ from aiogram.types import Message
 from ..keyboards import main_menu_kb, only_main_menu_button_kb
 from ..keyboards.choose_file_keyboard import choose_file_kb, download_file, work_with_tags
 from Repo.TGDesignBot.main.pptxHandler import get_template_of_slides, SlideInfo, remove_template
+from Repo.TGDesignBot.main.YandexDisk import get_download_link
 
 router = Router()
 
@@ -291,11 +292,11 @@ async def choose_category(message: Message, state: FSMContext):
     files_list = user_info['files_list']
 
     for file in files_list:
-        if file[3] == message.text:
+        if file[2] == message.text:
             file_id = file[0]
-            link = file[1]
-            file_path = file[2]
-            file_name = file[3]
+            file_path = file[1]
+            file_name = file[2]
+            link = get_download_link(str(file_path) + '/' + str(file_name))
             await state.update_data(file_id=file_id)
             await state.update_data(link=link)
             await state.update_data(file_path=file_path)

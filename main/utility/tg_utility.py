@@ -6,7 +6,7 @@ from aiogram.types import Message
 from aiogram import types
 import io
 import aiohttp
-from aiogram.enums import ParseMode, ChatAction
+from aiogram.enums import ChatAction
 from aiogram.utils.chat_action import ChatActionSender
 
 async def can_go_right(indx_list_end : int, len_child_list : int) -> bool:

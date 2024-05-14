@@ -3,7 +3,6 @@ from Repo.TGDesignBot.main.DBHandler.insert_scripts import (insert_many_slides,
                                                             insert_template,
                                                             insert_many_images)
 from Repo.TGDesignBot.main.YandexDisk import YaDiskInfo
-from Repo.TGDesignBot.main.YandexDisk import YaDiskHandler
 from Repo.TGDesignBot.main.pptxHandler.pptxHandler import (install_templates,
                                                            get_slides_information)
 

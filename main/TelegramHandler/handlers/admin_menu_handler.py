@@ -4,7 +4,7 @@ from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_back as check_back
 from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_info
 from Repo.TGDesignBot.main.utility.tg_utility import update_indx as update_user_indx
-from Repo.TGDesignBot.main.DBHandler.select_scripts import is_user_admin
+from Repo.TGDesignBot.main.DBHandler import is_user_admin
 from Repo.TGDesignBot.main.YandexDisk.YaDiskHandler import upload_to_disk
 from aiogram.fsm.context import FSMContext
 

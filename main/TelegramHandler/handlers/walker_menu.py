@@ -9,8 +9,8 @@ from aiogram import F, Router
 from aiogram.filters import Command
 
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state, StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import Message
 from ..keyboards.start_and_simple_button import choose_category_template
 from ..keyboards.choose_file_keyboard import choose_file_kb
 
@@ -153,7 +153,7 @@ async def output_files(message: Message, state: FSMContext):
     file_name_list = []
 
     for file in files_list:
-        file_name_list.append(file[3])
+        file_name_list.append(file[2])
     can_go_right = await check_right(indx_list_end, len(file_name_list))
     can_go_left = await check_left(indx_list_start)
 
