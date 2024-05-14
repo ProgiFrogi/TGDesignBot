@@ -114,3 +114,7 @@ async def send_file_from_local(message : Message, path):
             path=path,
         )
     )
+
+# Input path
+async def download_all_zips(message : Message, YDpath, local_path):
+

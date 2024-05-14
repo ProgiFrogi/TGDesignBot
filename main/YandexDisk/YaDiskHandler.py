@@ -3,9 +3,10 @@ import yadisk
 from . import YaDiskInfo
 from Repo.TGDesignBot.main.Tree.ClassTree import Tree
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
-ya_disk = yadisk.YaDisk(token=('TOKEN')
+ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_TOKEN')))
 
 
 # Takes item from YaDisk and checking is it a photo directory.

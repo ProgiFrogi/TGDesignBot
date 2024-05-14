@@ -1,5 +1,6 @@
 import pickle
-from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type
+from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type, \
+    download_all_zips
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_back as check_back
 from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_info
@@ -156,6 +157,11 @@ async def output_files(message: Message, state: FSMContext):
         text="Выберете один из файлов",
         reply_markup=reply_markup
     )
+
+@router.message(WalkerState.choose_button, F.text.lower() == 'забрать текст')
+async def take_all_fonts_in_dir(message: Message, state: FSMContext):
+
+    async download_all_zips(message, )
 
 @router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):

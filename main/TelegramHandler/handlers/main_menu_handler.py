@@ -54,5 +54,3 @@ async def choose_category_handler(message: Message, state: FSMContext):
         reply_markup=choose_category_kb(message)
     )
     await state.set_state(UserStates.in_choose_category)
-
-
