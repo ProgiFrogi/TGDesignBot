@@ -49,7 +49,7 @@ async def admin_menu(message: Message, state: FSMContext):
 async def admin_menu(message: Message, state: FSMContext):
     await state.update_data(state_action="add")
     await message.answer(
-        text='Выберете папку',
+        text='Выберете категорию',
         reply_markup=choose_category_kb(message)
     )
 @router.message(F.text.lower() == "удалить материал", AdminState.choose_button)

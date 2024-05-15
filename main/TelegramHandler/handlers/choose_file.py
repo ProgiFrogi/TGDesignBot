@@ -1,3 +1,5 @@
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, download_with_link, \
     send_file_from_local
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
@@ -104,10 +106,18 @@ async def get_fonts(message: types.Message, state: FSMContext):
 @router.message(WalkerState.choose_file, F.text.lower() == "как установить шрифты?")
 @router.message(WalkerState.choose_tags, F.text.lower() == "как установить шрифты?")
 async def send_info(message: types.Message, state: FSMContext):
+    try:
+        await message.answer(
+            text='Дождитесь отправки файла...'
+        )
+    except:
+        print('Proxy error')
     path = './Data/Appdata/00 How to install fonts.pdf'
     await send_file_from_local(message, path)
+    reply_markup = await only_main_menu_button_kb(message)
     await message.answer(
-        text='Это вам поможет'
+        text='Это вам поможет',
+        reply_markup=reply_markup
     )
 
 
@@ -203,8 +213,10 @@ async def clear_tags(message: Message, state: FSMContext):
             print('error')
     else:
         try:
+            reply_markup = ReplyKeyboardBuilder().as_markup()
             await message.answer(
-                text='Дождитесь, пока файл загрузится...'
+                text='Дождитесь, пока файл загрузится...',
+                reply_markup=reply_markup
             )
         except:
             print('error2')
@@ -329,5 +341,27 @@ async def choose_category(message: Message, state: FSMContext):
             reply_markup=reply_markup
         )
 
-
+    if (type_file == 'font'):
+        list_fonts = get_fonts_by_template_id(file_id)
+        reply_markup = download_file(message)
+        try:
+            await message.answer(
+                text="Дождитесь полной отправки шрифтов..."
+            )
+        except:
+            print('Error')
+        try:
+            await download_with_link(message, list_fonts[0][1], 'fonts.zip')
+            reply_markup = main_menu_kb(message)
+            await message.answer(
+                text="Все шрифты отправлены!",
+                reply_markup=reply_markup
+            )
+        except:
+            reply_markup = only_main_menu_button_kb(message)
+            if len(list_fonts) == 0:
+                await message.answer(
+                    text="Для данной презентации нет шрифтов!",
+                    reply_markup=reply_markup
+                )
 

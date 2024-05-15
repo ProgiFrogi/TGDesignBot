@@ -43,7 +43,7 @@ async def get_list_of_files(state : FSMContext) -> list:
         list_of_files = await get_templates_from_child_directories(path)
     elif (list_of_path[0] == "Корпоративные шрифты"):
         path = '/'.join(list_of_path[1:])
-        list_of_files = get_fonts_from_child_directories(path)
+        list_of_files = await get_templates_from_child_directories(path)
     elif (list_of_path[0] == "Изображения"):
         path = '/'.join(list_of_path[1:])
         list_of_files = get_images_from_child_directories(path)
@@ -188,6 +188,25 @@ def merge_fonts(input_folder, output_zip):
                                         )
                                     except:
                                         print('Cant add font to zip')
+
+
+async def choose_message_from_type_file(message : Message, state : FSMContext, reply_markup):
+    user_info = await state.get_data()
+    type_file = user_info['type_file']
+
+    if (type_file in ['template', 'slide']):
+        await message.answer(
+            text="Выберете один из файлов",
+            reply_markup=reply_markup
+        )
+    elif(type_file == 'font'):
+        await message.answer(
+            text="Выберете презентацию из которой хотите получить ширфты",
+            reply_markup=reply_markup
+        )
+
+
+
 if __name__ == '__main__':
     zip_f = '/home/proggifroggi/PycharmProjects/StudyProject/TGDesignBot/Repo/TGDesignBot/main/Data/forZip'
     folder = '/home/proggifroggi/PycharmProjects/StudyProject/TGDesignBot/Repo/TGDesignBot/main/Data/forZip/5592902615'

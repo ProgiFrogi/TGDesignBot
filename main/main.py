@@ -11,11 +11,11 @@ from Repo.TGDesignBot.main.YandexDisk.YaDiskHandler import update_tree
 
 async def main():
     # Fill database + create tree with dir
-    # tree = Tree()
-    # update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
-    # with open("Tree/ObjectTree.pkl", "wb") as fp:
-    #     pickle.dump(tree, fp)
-    # initialize_database()
+    tree = Tree()
+    update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
+    with open("Tree/ObjectTree.pkl", "wb") as fp:
+        pickle.dump(tree, fp)
+    initialize_database()
     await TGbot.start_bot()
 
 if __name__ == '__main__':

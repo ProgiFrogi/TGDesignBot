@@ -1,6 +1,6 @@
 import pickle
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type, \
-    start_send_fonts
+    start_send_fonts, choose_message_from_type_file
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_back as check_back
 from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_info
@@ -10,8 +10,8 @@ from aiogram import F, Router
 from aiogram.filters import Command
 
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state, StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import Message
 from ..keyboards.start_and_simple_button import choose_category_template
 from ..keyboards.choose_file_keyboard import choose_file_kb
 router = Router()
@@ -153,10 +153,7 @@ async def output_files(message: Message, state: FSMContext):
 
     reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
     await from_button_to_file(message, state, files_list, file_name_list, WalkerState.choose_file)
-    await message.answer(
-        text="Выберете один из файлов",
-        reply_markup=reply_markup
-    )
+    await choose_message_from_type_file(message, state, reply_markup)
 
 @router.message(WalkerState.choose_button, F.text.lower() == 'забрать все')
 async def take_all_fonts_in_dir(message: Message, state: FSMContext):
