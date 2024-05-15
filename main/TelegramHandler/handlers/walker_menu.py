@@ -1,6 +1,6 @@
 import pickle
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type, \
-    download_all_zips
+    start_send_fonts
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_back as check_back
 from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_info
@@ -20,7 +20,7 @@ router = Router()
 tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
 # except:
 #     # tree = ClassTree.Tree()
-dist_indx = 1
+dist_indx = 3
 
 class WalkerState(StatesGroup):
     choose_button = State()
@@ -59,7 +59,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup=reply_markup
     )
 
-@router.message(WalkerState.choose_button, F.text.lower() == "следующий блок")
+@router.message(WalkerState.choose_button, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
 
@@ -84,7 +84,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_button, F.text.lower() == "преведущий блок")
+@router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
     user_info = await state.get_data()
@@ -109,7 +109,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_button, F.text.lower() == "назад")
+@router.message(WalkerState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
     user_info = await state.get_data()
@@ -158,12 +158,13 @@ async def output_files(message: Message, state: FSMContext):
         reply_markup=reply_markup
     )
 
-@router.message(WalkerState.choose_button, F.text.lower() == 'забрать текст')
+@router.message(WalkerState.choose_button, F.text.lower() == 'забрать все')
 async def take_all_fonts_in_dir(message: Message, state: FSMContext):
+    user_info = await state.get_data()
+    path = '/'.join(user_info['path'][1:])
+    await start_send_fonts(message, path)
 
-    async download_all_zips(message, )
-
-@router.message(WalkerState.choose_button, F.text.lower() == "назад")
+@router.message(WalkerState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
     user_info = await state.get_data()
@@ -198,8 +199,6 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     indx_list_start = 0
     indx_list_end = dist_indx + indx_list_start
-
-    print(child_list)
 
     path = user_info['path']
     path.append(message.text)

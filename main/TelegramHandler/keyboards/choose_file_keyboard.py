@@ -11,9 +11,9 @@ async def choose_file_kb(key_list : list, message : Message, can_go_left : bool,
         kb.add(types.KeyboardButton(text=elem))
     kb.adjust(3)
     if (can_go_right):
-        kb.button(text="Следующий блок")
+        kb.button(text="Далее")
     if (can_go_left):
-        kb.button(text="Преведущий блок")
+        kb.button(text="Назад")
     kb.adjust(2)
     kb.button(text="В главное меню")
     kb.adjust(1)
@@ -35,9 +35,9 @@ async def work_with_tags(key_list : list, can_go_left : bool,
         kb.add(types.KeyboardButton(text=elem))
     kb.adjust(3)
     if (can_go_right):
-        kb.button(text="Следующий блок")
+        kb.button(text="Далее")
     if (can_go_left):
-        kb.button(text="Преведущий блок")
+        kb.button(text="Назад")
     kb.adjust(2)
     if (len(user_tags) > 0):
         kb.button(text="Очистить теги")

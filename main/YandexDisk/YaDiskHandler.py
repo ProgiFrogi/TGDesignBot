@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_TOKEN')))
+TOKEN_STR = str(os.getenv('YANDEX_DISK_TOKEN'))
+print(f'Your token: ' + ('*' * 56) + f'{TOKEN_STR[-5:]}')
+ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
 
 
 # Takes item from YaDisk and checking is it a photo directory.

@@ -7,6 +7,7 @@ from Repo.TGDesignBot.main.utility.tg_utility import update_indx as update_user_
 from Repo.TGDesignBot.main.DBHandler.select_scripts import IsAdminUser
 from Repo.TGDesignBot.main.YandexDisk.YaDiskHandler import upload_to_disk
 from aiogram.fsm.context import FSMContext
+import aiogram.exceptions as tg_exceptions
 
 from ..keyboards import choose_file_kb
 from ..keyboards.start_and_simple_button import admin_panel
@@ -28,7 +29,7 @@ tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
 
 
 # how many block names will be displayed
-dist_indx = 1
+dist_indx = 3
 
 class AdminState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back, действие
@@ -87,7 +88,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
 # If user not in root
 @router.message(Command(commands=["next_block"]))
-@router.message(AdminState.choose_button, F.text.lower() == "следующий блок")
+@router.message(AdminState.choose_button, F.text.lower() == "далее️")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
 
@@ -113,7 +114,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     await update_user_indx(state, indx_list_start, indx_list_end)
 
 @router.message(Command(commands=["prev_block"]))
-@router.message(AdminState.choose_button, F.text.lower() == "преведущий блок")
+@router.message(AdminState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
     user_info = await state.get_data()
@@ -138,7 +139,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(AdminState.choose_button, F.text.lower() == "назад")
+@router.message(AdminState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
     user_info = await state.get_data()
@@ -175,7 +176,14 @@ async def download_file(message : Message, bot : Bot, state: FSMContext):
     ydisk_path = user_info['path'][1:]
     file_id = message.document.file_id
     file_name = message.document.file_name.split('.')
-    file = await bot.get_file(file_id)
+    try:
+        file = await bot.get_file(file_id)
+    except tg_exceptions.TelegramBadRequest:
+        await message.answer(
+            text='Ваш файл слишком большой: Telegram server says - Bad Request: file is' +
+                 ' too big \n Вы можете попробовать загрузить другой файл'
+        )
+        return
     file_path = file.file_path
     local_path = f"./Data/DataFromUser/{file_name[0]}.{file_name[-1]}"
     await bot.download_file(

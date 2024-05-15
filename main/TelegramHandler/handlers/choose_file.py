@@ -19,7 +19,7 @@ from Repo.TGDesignBot.main.pptxHandler import get_template_of_slides, SlideInfo,
 
 router = Router()
 
-dist_indx = 1
+dist_indx = 3
 class WalkerState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back
     choose_button = State()
@@ -27,7 +27,7 @@ class WalkerState(StatesGroup):
     choose_file = State()
     choose_tags = State()
 
-@router.message(WalkerState.choose_file, F.text.lower() == "следующий блок")
+@router.message(WalkerState.choose_file, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -49,7 +49,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_file, F.text.lower() == "преведущий блок")
+@router.message(WalkerState.choose_file, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -112,13 +112,11 @@ async def send_info(message: types.Message, state: FSMContext):
 
 
 
-@router.message(WalkerState.choose_tags, F.text.lower() == "следующий блок")
+@router.message(WalkerState.choose_tags, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
     user_info = await state.get_data()
-    print(user_info)
-    print(user_info['indx_list_end'])
     user_tags = user_info['user_tags']
     indx_list_end = user_info['indx_list_end']
     list_tags = user_info['list_tags']
@@ -135,7 +133,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_tags, F.text.lower() == "преведущий блок")
+@router.message(WalkerState.choose_tags, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -238,7 +236,6 @@ async def choose_tags(message: Message, state: FSMContext):
     indx_list_start = user_info['indx_list_start']
     indx_list_end = user_info['indx_list_end']
     list_tags = user_info['list_tags']
-    print(list_tags)
 
     input_tags = message.text.split(';')
     for tag in input_tags:
@@ -306,8 +303,12 @@ async def choose_category(message: Message, state: FSMContext):
     if (type_file == 'slide'):
         await state.clear()
         await state.set_state(WalkerState.choose_tags)
-
         list_tags = get_all_tags_by_template_id(file_id)
+        # Remove all empty tags
+        try:
+            list_tags.remove('')
+        except:
+            print('No empty tags')
         await state.update_data(list_tags=list_tags)
         await state.update_data()
         await state.update_data(user_tags=[])

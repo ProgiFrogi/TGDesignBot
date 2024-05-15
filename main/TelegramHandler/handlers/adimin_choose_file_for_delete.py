@@ -9,14 +9,14 @@ from ..keyboards.choose_file_keyboard import choose_file_kb
 
 router = Router()
 
-dist_indx = 1
+dist_indx = 3
 class AdminState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back
     choose_button = State()
     choose_category = State()
     choose_file = State()
 
-@router.message(AdminState.choose_file, F.text.lower() == "следующий блок")
+@router.message(AdminState.choose_file, F.text.lower() == "➡️")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
