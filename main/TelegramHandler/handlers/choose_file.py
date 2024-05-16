@@ -2,8 +2,10 @@ from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right
     send_file_from_local
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import update_indx as update_user_indx
-from Repo.TGDesignBot.main.DBHandler import get_fonts_by_template_id, get_all_tags_by_template_id, \
-    get_slides_by_tags_and_template_id, get_templates_by_index
+from Repo.TGDesignBot.main.DBHandler import (get_fonts_by_template_id,
+                                             get_all_tags_by_template_id,
+                                             get_slides_by_tags_and_template_id,
+                                             get_templates_by_index)
 from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import TemplateInfo
 from aiogram import types
 

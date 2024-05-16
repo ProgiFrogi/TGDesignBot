@@ -1,6 +1,7 @@
 import copy
 import datetime
 import os
+import pickle
 
 import yadisk
 from Repo.TGDesignBot.main.DBHandler import get_template_id_by_name
@@ -11,9 +12,7 @@ from Repo.TGDesignBot.main.DBHandler import delete_template
 from dotenv import load_dotenv
 
 from .YaDiskInfo import TemplateInfo
-
-load_dotenv()
-ya_disk = yadisk.YaDisk(token=('TOKEN'))
+ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
 
 
 # Takes item from YaDisk and checking is it a photo directory.

@@ -1,10 +1,15 @@
+import pickle
+
 import requests
 import os
+
+import yadisk
 from pptx import Presentation
 from Repo.TGDesignBot.main.YandexDisk.YaDiskInfo import TemplateInfo
-from Repo.TGDesignBot.main.YandexDisk.YaDiskHandler import get_download_link
 import aspose.slides as slides
 
+ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
+# ya_disk = pickle.load(open("YandexDisk/YaDisk.pkl", "rb"))
 
 class SlideInfo:
     def __init__(self, slide_idx: int, tags: str):
@@ -36,7 +41,7 @@ def install_templates(path: str, templates: list):
         for template in templates:
             if os.path.exists(path + template.name):
                 continue
-            response = requests.get(get_download_link(template.path + '/' + template.name))
+            response = requests.get(ya_disk.get_download_link(template.path + '/' + template.name))
             with open(path + template.name, 'wb') as file:
                 file.write(response.content)
     except Exception as e:
