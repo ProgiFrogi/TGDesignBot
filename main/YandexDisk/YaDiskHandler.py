@@ -56,7 +56,7 @@ def __search_in_directory__(directory: str,
                 ya_disk_info.add_template(item.name, item.path[: item.path.rfind('/')])
 
             elif is_font(item):
-                ya_disk_info.add_font(item.path[: item.path.rfind('/')])
+                ya_disk_info.add_font(item.path[: item.path.rfind('/')], item.name)
 
 
 # Function take an empty lists ant trying to bring from YDisc all files created from last

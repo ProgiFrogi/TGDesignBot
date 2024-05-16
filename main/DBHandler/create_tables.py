@@ -28,7 +28,8 @@ def create_tables():
             create table if not exists fonts (
                 font_id serial primary key,
                 path text not null,
-                template_id serial,
+                template_id serial
+                name text not null,
                 foreign key (template_id) references templates(template_id) on delete cascade
             );
         """,

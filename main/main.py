@@ -15,9 +15,6 @@ from Repo.TGDesignBot.main.YandexDisk.YaDiskHandler import update_tree
 async def main():
     # Fill database + create tree with dir
     load_dotenv()
-    # ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
-    # with open("YandexDisk/YaDisk.pkl", "wb") as fp:
-    #     pickle.dump(ya_disk, fp)
     # tree = Tree()
     # update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
     # with open("Tree/ObjectTree.pkl", "wb") as fp:

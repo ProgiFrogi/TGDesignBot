@@ -20,6 +20,7 @@ def update_db(last_updated_time: datetime.datetime):
         template_id = get_template_id_by_name(template_info.path, template_info.name)
         delete_template(template_id)
 
+
 # Update actuality of database and tree.
 def update_tree_and_db(tree: Tree, last_updated_time: datetime.datetime):
     time_copy = copy.deepcopy(last_updated_time)
