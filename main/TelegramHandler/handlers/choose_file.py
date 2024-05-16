@@ -114,7 +114,7 @@ async def send_info(message: types.Message, state: FSMContext):
         print('Proxy error')
     path = './Data/Appdata/00 How to install fonts.pdf'
     await send_file_from_local(message, path)
-    reply_markup = await only_main_menu_button_kb(message)
+    reply_markup = only_main_menu_button_kb(message)
     await message.answer(
         text='Это вам поможет',
         reply_markup=reply_markup

@@ -9,7 +9,7 @@ from ..keyboards.start_and_simple_button import start_menu_kb, choose_category_k
 
 router = Router()
 
-
+users = [5592902615, 2114778573, 928962436]
 
 class UserStates(StatesGroup):
     in_main_menu = State()
@@ -21,7 +21,7 @@ class UserStates(StatesGroup):
     find_ready_structs = State()
 
 
-@router.message(Command("start"))
+@router.message(Command("start"), lambda message: message.from_user.id in users)
 async def cmd_start_handler(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
@@ -29,7 +29,7 @@ async def cmd_start_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
-@router.message(StateFilter(default_state), Command(commands=["menu"]))
+@router.message(StateFilter(default_state), Command(commands=["menu"]), lambda message: message.from_user.id in users)
 @router.message(default_state, F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
     await state.set_data({})
@@ -37,7 +37,7 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         text="Вы и так в главном меню...",
         reply_markup=start_menu_kb(message)
     )
-@router.message(Command(commands=["menu"]))
+@router.message(Command(commands=["menu"]), lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
     await state.clear()
@@ -46,7 +46,7 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
-@router.message(StateFilter(None), Command(commands=["choose_category"]))
+@router.message(StateFilter(None), Command(commands=["choose_category"]), lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "готовлю презентацию сам, нужны материалы")
 async def choose_category_handler(message: Message, state: FSMContext):
     await message.answer(

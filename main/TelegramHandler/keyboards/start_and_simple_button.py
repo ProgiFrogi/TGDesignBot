@@ -31,6 +31,8 @@ def main_menu_kb(message: Message):
 def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Шаблон презентаций")
+    kb.button(text="Готовые слайды о компании")
+    kb.button(text="Корпоративные шрифты")
     kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
@@ -81,6 +83,6 @@ async def admin_choose_category_template(key_list : list, message : Message, can
 def admin_panel(message : Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Добавить материал")
-    kb.button(text="Удалить материал")
+    # kb.button(text="Удалить материал")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)

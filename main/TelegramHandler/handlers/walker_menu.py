@@ -1,4 +1,8 @@
 import pickle
+import aiogram
+
+import aiogram.types.chat
+
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type, \
     start_send_fonts, choose_message_from_type_file
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
@@ -15,7 +19,7 @@ from aiogram.types import Message
 from ..keyboards.start_and_simple_button import choose_category_template
 from ..keyboards.choose_file_keyboard import choose_file_kb
 router = Router()
-
+users = [5592902615, 2114778573, 928962436]
 # try:
 tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
 # except:
@@ -28,11 +32,10 @@ class WalkerState(StatesGroup):
     choose_file = State()
 
 # If user in root
-@router.message(Command(commands=["depth_1"]))
-@router.message(F.text.lower() == "шаблон презентаций")
-@router.message(F.text.lower() == "изображения")
-@router.message(F.text.lower() == "корпоративные шрифты")
-@router.message(F.text.lower() == "готовые слайды о компании")
+@router.message(F.text.lower() == "шаблон презентаций", lambda message: message.from_user.id in users)
+@router.message(F.text.lower() == "изображения", lambda message: message.from_user.id in users)
+@router.message(F.text.lower() == "корпоративные шрифты", lambda message: message.from_user.id in users)
+@router.message(F.text.lower() == "готовые слайды о компании", lambda message: message.from_user.id in users)
 async def first_depth_template_find(message: Message, state: FSMContext):
     global tree, dist_indx
 
@@ -58,6 +61,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
+    # await message.delete()
 
 @router.message(WalkerState.choose_button, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -78,11 +82,12 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                   can_go_right, can_go_back, type_file)
     await message.answer(
-        text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+        # text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
 
     await update_user_indx(state, indx_list_start, indx_list_end)
+    # await message.delete()
 
 @router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -103,11 +108,12 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                   can_go_right, can_go_back, type_file)
     await message.answer(
-        text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+        # text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
 
     await update_user_indx(state, indx_list_start, indx_list_end)
+    # await message.delete()
 
 @router.message(WalkerState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -129,10 +135,11 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                   can_go_right, can_go_back, type_file)
     await message.answer(
-        text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+        # text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
     await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
+    # await message.delete()
 
 @router.message(WalkerState.choose_button, F.text.lower() == "вывести все")
 async def output_files(message: Message, state: FSMContext):
@@ -154,12 +161,14 @@ async def output_files(message: Message, state: FSMContext):
     reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
     await from_button_to_file(message, state, files_list, file_name_list, WalkerState.choose_file)
     await choose_message_from_type_file(message, state, reply_markup)
+    # await message.delete()
 
 @router.message(WalkerState.choose_button, F.text.lower() == 'забрать все')
 async def take_all_fonts_in_dir(message: Message, state: FSMContext):
     user_info = await state.get_data()
     path = '/'.join(user_info['path'][1:])
     await start_send_fonts(message, path)
+    # await message.delete()
 
 @router.message(WalkerState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -179,9 +188,10 @@ async def first_depth_template_find(message: Message, state: FSMContext):
                                                   can_go_right, can_go_back, type_file)
     await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
     await message.answer(
-        text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+        # text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
+    # await message.delete()
 
 
 @router.message(WalkerState.choose_button)
@@ -210,3 +220,4 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
         reply_markup=reply_markup
     )
+    # await message.delete()

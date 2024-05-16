@@ -45,13 +45,6 @@ async def admin_menu(message: Message, state: FSMContext):
         reply_markup=admin_panel(message)
     )
 
-@router.message(F.text.lower() == "добавить материал", AdminState.choose_button)
-async def admin_menu(message: Message, state: FSMContext):
-    await state.update_data(state_action="add")
-    await message.answer(
-        text='Выберете категорию',
-        reply_markup=choose_category_kb(message)
-    )
 @router.message(F.text.lower() == "удалить материал", AdminState.choose_button)
 async def admin_menu(message: Message, state: FSMContext):
     await state.update_data(state_action="delete")
@@ -61,10 +54,11 @@ async def admin_menu(message: Message, state: FSMContext):
     )
 
 # If user in root
-@router.message(Command(commands=["depth_1_template"]))
-@router.message(AdminState.choose_button, F.text.lower() == "шаблон презентаций")
+@router.message(AdminState.choose_button, F.text.lower() == "добавить материал")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree, dist_indx
+    global dist_indx
+    await state.update_data(state_action="add")
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
 
     child_list = tree.get_children(tree.root.name)
 
@@ -79,6 +73,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     await update_user_info(state, path, 0, indx_list_end, False, child_list)
     user_info = await state.get_data()
     action = user_info['state_action']
+    await state.update_data()
     reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                   can_go_right, False, action)
     await message.answer(
@@ -87,10 +82,9 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
 
 # If user not in root
-@router.message(Command(commands=["next_block"]))
 @router.message(AdminState.choose_button, F.text.lower() == "далее️")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree, dist_indx
+    global dist_indx
 
     user_info = await state.get_data()
     indx_list_start = user_info['indx_list_start']
@@ -113,10 +107,9 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(Command(commands=["prev_block"]))
 @router.message(AdminState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree, dist_indx
+    global dist_indx
     user_info = await state.get_data()
     indx_list_start = user_info['indx_list_start']
     indx_list_end = user_info['indx_list_end']
@@ -141,9 +134,10 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
 @router.message(AdminState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree, dist_indx
+    global dist_indx
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     user_info = await state.get_data()
-    user_data = user_info['user_node']
+    user_data = user_info['path']
     indx_list_start = user_info['indx_list_start']
     indx_list_end = user_info['indx_list_end']
     child_list = user_info['child_list']
@@ -164,7 +158,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     )
     await update_user_info(state, user_data, indx_list_start, indx_list_end, can_go_back, child_list)
 
-@router.message(F.text.lower() == "добавить сюда")
+@router.message(F.text.lower() == "добавить сюда", AdminState.choose_button)
 async def download(message: Message, state: FSMContext):
     await message.answer(
         text="Скиньте ваш файл в чат",
@@ -219,7 +213,8 @@ async def output_files(message: Message, state: FSMContext):
 
 @router.message(AdminState.choose_button)
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree, dist_indx
+    global dist_indx
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     user_info = await state.get_data()
     child_list = user_info['child_list']
 
