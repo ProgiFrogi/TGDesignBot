@@ -59,8 +59,8 @@ def insert_many_users(user_list: list):
 
 # Insert a new template into the templates table. Return template_id
 def insert_template(template_info: TemplateInfo) -> int:
-    sql = """insert into templates(link, path, name)
-             values (%s, %s, %s)  returning *;"""
+    sql = """insert into templates(path, name)
+             values (%s, %s)  returning *;"""
     return __insert_single_value__(sql,
                                    template_info.path,
                                    template_info.name)
@@ -75,8 +75,8 @@ def insert_many_templates(template_list: list):
 # Insert a new font into the fonts table
 def insert_font(font_info: FontInfo):
     list_of_template_id = select_scripts.get_templates_from_directory(font_info.path)
-    sql = """insert into fonts(link, path, template_id) 
-             values (%s, %s, %s)  returning *"""
+    sql = """insert into fonts(path, template_id) 
+             values (%s, %s)  returning *"""
     for template_id in list_of_template_id:
         __insert_single_value__(sql,
                                 font_info.path,
@@ -89,20 +89,20 @@ def insert_many_fonts(font_list: list):
         insert_font(font_info)
 
 
-def insert_image(image_info: ImageInfo):
-    list_of_template_id = select_scripts.get_templates_from_directory(image_info.path)
-    sql = """insert into images(template_id, path, link)
-             values (%s, %s, %s) returning *;"""
-    for template_id in list_of_template_id:
-        __insert_single_value__(sql,
-                                int(template_id[0]),
-                                image_info.path,
-                                image_info.position)
+# def insert_image(image_info: ImageInfo):
+#     list_of_template_id = select_scripts.get_templates_from_directory(image_info.path)
+#     sql = """insert into images(template_id, path, link)
+#              values (%s, %s, %s) returning *;"""
+#     for template_id in list_of_template_id:
+#         __insert_single_value__(sql,
+#                                 int(template_id[0]),
+#                                 image_info.path,
+#                                 image_info.position)
 
 
-def insert_many_images(image_list: list):
-    for image_info in image_list:
-        insert_image(image_info)
+# def insert_many_images(image_list: list):
+#     for image_info in image_list:
+#         insert_image(image_info)
 
 
 def insert_slides(template_id: int, slide_info: pptxHandler.SlideInfo):

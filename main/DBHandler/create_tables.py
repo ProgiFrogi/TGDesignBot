@@ -45,7 +45,7 @@ def create_tables():
                 image_id serial primary key,
                 template_id serial,
                 foreign key (template_id) references templates(template_id) on delete cascade,
-                path text not null,
+                path text not null
             );
         """
     )
