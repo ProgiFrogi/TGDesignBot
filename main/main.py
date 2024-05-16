@@ -18,11 +18,11 @@ async def main():
     # ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
     # with open("YandexDisk/YaDisk.pkl", "wb") as fp:
     #     pickle.dump(ya_disk, fp)
-    tree = Tree()
-    update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
-    with open("Tree/ObjectTree.pkl", "wb") as fp:
-        pickle.dump(tree, fp)
-    initialize_database()
+    # tree = Tree()
+    # update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
+    # with open("Tree/ObjectTree.pkl", "wb") as fp:
+    #     pickle.dump(tree, fp)
+    # initialize_database()
     await TGbot.start_bot()
 
 if __name__ == '__main__':

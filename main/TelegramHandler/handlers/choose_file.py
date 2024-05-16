@@ -85,6 +85,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 @router.message(WalkerState.choose_tags, F.text.lower() == "получить шрифты")
 async def get_fonts(message: types.Message, state: FSMContext):
     user_info = await state.get_data()
+    path = user_info['path']
     template_id = user_info["file_id"]
     list_fonts = get_fonts_by_template_id(template_id)
 
@@ -95,7 +96,8 @@ async def get_fonts(message: types.Message, state: FSMContext):
     except:
         print('Error')
     try:
-        await download_with_link(message, list_fonts[0][1], 'fonts.zip')
+        link = get_download_link(list_fonts[0][1])
+        await download_with_link(message, link, 'fonts.zip')
         reply_markup = main_menu_kb(message)
         await message.answer(
             text="Все шрифты отправлены!",
