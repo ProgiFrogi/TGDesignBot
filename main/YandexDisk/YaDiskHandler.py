@@ -138,10 +138,13 @@ def delete_from_disk(path: str):
     check_token(ya_disk)
     try:
         if path.endswith('.pptx'):
-            os.remove('./Data/Templates/' + path[path.rfind('/') + 1:])
+            try:
+                os.remove('./Data/Templates/' + path[path.rfind('/') + 1:])
+            except FileNotFoundError:
+                print('Данного файла нет на локальном диске')
             template_info = TemplateInfo(path[path.rfind('/') + 1:], path[:path.rfind('/')])
             template_id = get_template_id_by_name(template_info.path, template_info.name)
             delete_template(template_id)
-        ya_disk.delete(path)
+        ya_disk.remove(path)
     except Exception as e:
         raise "No such file or directory"

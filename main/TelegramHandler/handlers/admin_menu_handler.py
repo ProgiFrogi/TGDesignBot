@@ -1,5 +1,6 @@
 import pickle
-from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, get_list_of_files, from_button_to_file
+from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, get_list_of_files, \
+    from_button_to_file, admin_from_chose_dir_to_choose_file
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_back as check_back
 from Repo.TGDesignBot.main.utility.tg_utility import update_data as update_user_info
@@ -211,18 +212,17 @@ async def output_files(message: Message, state: FSMContext):
     file_name_list = []
 
     for file in files_list:
-        file_name_list.append(file[3])
+        file_name_list.append(file[2])
     can_go_right = await check_right(indx_list_end, len(file_name_list))
     can_go_left = await check_left(indx_list_start)
 
     reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
                                         can_go_right)
-    await from_button_to_file(message, state, files_list, file_name_list, AdminState.choose_file)
+    await admin_from_chose_dir_to_choose_file(message, state, files_list, file_name_list, AdminState.choose_file)
     await message.answer(
         text="Выберете один из файлов",
         reply_markup=reply_markup
     )
-
 
 @router.message(AdminState.choose_button)
 async def first_depth_template_find(message: Message, state: FSMContext):

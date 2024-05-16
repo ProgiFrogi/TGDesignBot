@@ -65,6 +65,21 @@ async def from_button_to_file(message : Message, state : FSMContext, files_list 
     await state.update_data(file_name_list=file_name_list)
     await state.update_data(type_file=type_file)
 
+async def admin_from_chose_dir_to_choose_file(message : Message, state : FSMContext, files_list : list, file_name_list : list, to_state) -> None:
+    global dist_indx
+    user_info = await state.get_data()
+    path = user_info['path']
+    indx_list_start = user_info['indx_list_start']
+    indx_list_end = user_info['indx_list_end']
+    child_list = user_info['child_list']
+    await state.set_state(to_state)
+    await state.update_data(path=path)
+    await state.update_data(indx_list_start=indx_list_start)
+    await state.update_data(indx_list_end=indx_list_end)
+    await state.update_data(child_list=child_list)
+    await state.update_data(files_list=files_list)
+    await state.update_data(file_name_list=file_name_list)
+
 async def set_file_type(message : Message, state : FSMContext) -> str:
     type_file = message.text
 

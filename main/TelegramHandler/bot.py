@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from Repo.TGDesignBot.main.TelegramHandler.handlers import simple_func_handler, main_menu_handler, admin_menu_handler, choose_file
+from Repo.TGDesignBot.main.TelegramHandler.handlers import (simple_func_handler, main_menu_handler, admin_menu_handler,
+                                                            choose_file, admin_choose_file_for_delete)
 from Repo.TGDesignBot.main.TelegramHandler.handlers import walker_menu
 
 
@@ -17,6 +18,7 @@ async def main():
     # Include router
     dp.include_router(main_menu_handler.router)
     dp.include_router(admin_menu_handler.router)
+    dp.include_router(admin_choose_file_for_delete.router)
     dp.include_router(simple_func_handler.router)
     dp.include_router(walker_menu.router)
     dp.include_router(choose_file.router)
