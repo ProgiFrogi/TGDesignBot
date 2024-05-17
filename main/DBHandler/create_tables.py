@@ -28,7 +28,7 @@ def create_tables():
             create table if not exists fonts (
                 font_id serial primary key,
                 path text not null,
-                template_id serial
+                template_id serial,
                 name text not null,
                 foreign key (template_id) references templates(template_id) on delete cascade
             );
@@ -41,14 +41,14 @@ def create_tables():
                 tags text
             );
         """,
-        """
-            create table if not exists images (
-                image_id serial primary key,
-                template_id serial,
-                foreign key (template_id) references templates(template_id) on delete cascade,
-                path text not null
-            );
-        """
+        # """
+        #     create table if not exists images (
+        #         image_id serial primary key,
+        #         template_id serial,
+        #         foreign key (template_id) references templates(template_id) on delete cascade,
+        #         path text not null
+        #     );
+        # """
     )
     try:
         config = load_config()

@@ -33,7 +33,6 @@ def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
     kb.button(text="Шаблон презентаций")
     kb.button(text="Готовые слайды о компании")
     kb.button(text="Корпоративные шрифты")
-    kb.button(text="Изображения")
     kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
@@ -44,18 +43,15 @@ async def choose_category_template(key_list : list, message : Message, can_go_le
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
-    kb.adjust(3)
     kb.button(text="Вывести все")
     if (file_type == 'font'):
         kb.button(text='Забрать все')
-    kb.adjust(1)
     if (can_go_right):
-        kb.button(text="Следующий блок")
+        kb.button(text="Далее")
     if (can_go_left):
-        kb.button(text="Преведущий блок")
-    kb.adjust(2)
-    if (can_go_back):
         kb.button(text="Назад")
+    if (can_go_back):
+        kb.button(text="В предыдущую директорию")
     kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
@@ -73,12 +69,12 @@ async def admin_choose_category_template(key_list : list, message : Message, can
         kb.button(text="Добавить сюда")
         kb.adjust(1)
     if (can_go_right):
-        kb.button(text="Следующий блок")
+        kb.button(text="Далее")
     if (can_go_left):
-        kb.button(text="Преведущий блок")
+        kb.button(text="Назад")
     kb.adjust(2)
     if (can_go_back):
-        kb.button(text="Назад")
+        kb.button(text="В предыдущую директорию")
     kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)

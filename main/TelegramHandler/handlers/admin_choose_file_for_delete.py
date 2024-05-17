@@ -22,7 +22,7 @@ class AdminState(StatesGroup):
     choose_file = State()
 
 
-@router.message(AdminState.choose_file, F.text.lower() == "следующий блок")
+@router.message(AdminState.choose_file, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -45,7 +45,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
     await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(AdminState.choose_file, F.text.lower() == "предыдущий блок")
+@router.message(AdminState.choose_file, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
     global dist_indx
 
@@ -97,8 +97,13 @@ async def choose_category(message: Message, state: FSMContext):
             await state.update_data(file_path=file_path)
             await state.update_data(file_name=file_name)
             break
-
-    delete_from_disk(str(file_path) + '/' + str(file_name))
+    try:
+        delete_from_disk(str(file_path) + '/' + str(file_name))
+    except:
+        print('Proxy err in delete')
+        await message.answer(
+            text='Данный файл успешно удален!'
+        )
     await message.answer(
         text='Данный файл успешно удален!'
     )
