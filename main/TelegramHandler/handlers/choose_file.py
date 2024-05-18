@@ -1,3 +1,5 @@
+import json
+
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_right as check_right, download_with_link, \
     send_file_from_local
 from Repo.TGDesignBot.main.utility.tg_utility import can_go_left as check_left
@@ -34,49 +36,53 @@ class WalkerState(StatesGroup):
 
 @router.message(WalkerState.choose_file, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global dist_indx
+    with open("config.json", "r") as file:
+        config = json.load(file)
+        dist_indx = config['dist']
 
-    user_info = await state.get_data()
-    indx_list_start = user_info['indx_list_start']
-    indx_list_end = user_info['indx_list_end']
-    file_name_list = user_info['file_name_list']
+        user_info = await state.get_data()
+        indx_list_start = user_info['indx_list_start']
+        indx_list_end = user_info['indx_list_end']
+        file_name_list = user_info['file_name_list']
 
-    indx_list_start = indx_list_end
-    indx_list_end = indx_list_end + dist_indx
+        indx_list_start = indx_list_end
+        indx_list_end = indx_list_end + dist_indx
 
-    can_go_right = await check_right(indx_list_end, len(file_name_list))
-    can_go_left = await check_left(indx_list_start)
-    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
-    await message.answer(
-        text="Выберете одну из файлов",
-        reply_markup=reply_markup
-    )
+        can_go_right = await check_right(indx_list_end, len(file_name_list))
+        can_go_left = await check_left(indx_list_start)
+        reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
+        await message.answer(
+            text="Выберете одну из файлов",
+            reply_markup=reply_markup
+        )
 
-    await update_user_indx(state, indx_list_start, indx_list_end)
+        await update_user_indx(state, indx_list_start, indx_list_end)
 
 
 @router.message(WalkerState.choose_file, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global dist_indx
+    with open("config.json", "r") as file:
+        config = json.load(file)
+        dist_indx = config['dist']
 
-    user_info = await state.get_data()
-    indx_list_start = user_info['indx_list_start']
-    indx_list_end = user_info['indx_list_end']
-    file_name_list = user_info['file_name_list']
+        user_info = await state.get_data()
+        indx_list_start = user_info['indx_list_start']
+        indx_list_end = user_info['indx_list_end']
+        file_name_list = user_info['file_name_list']
 
-    indx_list_start -= dist_indx
-    indx_list_end -= dist_indx
+        indx_list_start -= dist_indx
+        indx_list_end -= dist_indx
 
-    can_go_right = await check_right(indx_list_end, len(file_name_list))
-    can_go_left = await check_left(indx_list_start)
+        can_go_right = await check_right(indx_list_end, len(file_name_list))
+        can_go_left = await check_left(indx_list_start)
 
-    reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
-    await message.answer(
-        text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
-        reply_markup=reply_markup
-    )
+        reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
+        await message.answer(
+            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            reply_markup=reply_markup
+        )
 
-    await update_user_indx(state, indx_list_start, indx_list_end)
+        await update_user_indx(state, indx_list_start, indx_list_end)
 
 
 @router.message(WalkerState.choose_file, F.text.lower() == "получить шрифты")
@@ -130,48 +136,52 @@ async def send_info(message: types.Message, state: FSMContext):
 
 @router.message(WalkerState.choose_tags, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global dist_indx
+    with open("config.json", "r") as file:
+        config = json.load(file)
+        dist_indx = config['dist']
 
-    user_info = await state.get_data()
-    user_tags = user_info['user_tags']
-    indx_list_end = user_info['indx_list_end']
-    list_tags = user_info['list_tags']
+        user_info = await state.get_data()
+        user_tags = user_info['user_tags']
+        indx_list_end = user_info['indx_list_end']
+        list_tags = user_info['list_tags']
 
-    indx_list_start = indx_list_end
-    indx_list_end = indx_list_end + dist_indx
+        indx_list_start = indx_list_end
+        indx_list_end = indx_list_end + dist_indx
 
-    can_go_right = await check_right(indx_list_end, len(list_tags))
-    can_go_left = await check_left(indx_list_start)
-    reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-    await message.answer(
-        text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
-        reply_markup=reply_markup
-    )
-    await update_user_indx(state, indx_list_start, indx_list_end)
+        can_go_right = await check_right(indx_list_end, len(list_tags))
+        can_go_left = await check_left(indx_list_start)
+        reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        await message.answer(
+            text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
+            reply_markup=reply_markup
+        )
+        await update_user_indx(state, indx_list_start, indx_list_end)
 
 @router.message(WalkerState.choose_tags, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global dist_indx
+    with open("config.json", "r") as file:
+        config = json.load(file)
+        dist_indx = config['dist']
 
-    user_info = await state.get_data()
-    user_tags = user_info['user_tags']
-    indx_list_start = user_info['indx_list_start']
-    indx_list_end = user_info['indx_list_end']
-    list_tags = user_info['list_tags']
+        user_info = await state.get_data()
+        user_tags = user_info['user_tags']
+        indx_list_start = user_info['indx_list_start']
+        indx_list_end = user_info['indx_list_end']
+        list_tags = user_info['list_tags']
 
-    indx_list_start -= dist_indx
-    indx_list_end -= dist_indx
+        indx_list_start -= dist_indx
+        indx_list_end -= dist_indx
 
-    can_go_right = await check_right(indx_list_end, len(list_tags))
-    can_go_left = await check_left(indx_list_start)
+        can_go_right = await check_right(indx_list_end, len(list_tags))
+        can_go_left = await check_left(indx_list_start)
 
-    reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-    await message.answer(
-        text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
-        reply_markup=reply_markup
-    )
+        reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        await message.answer(
+            text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
+            reply_markup=reply_markup
+        )
 
-    await update_user_indx(state, indx_list_start, indx_list_end)
+        await update_user_indx(state, indx_list_start, indx_list_end)
 
 
 @router.message(WalkerState.choose_tags, F.text.lower() == "очистить теги")
@@ -286,95 +296,96 @@ async def choose_tags(message: Message, state: FSMContext):
 
 @router.message(WalkerState.choose_file)
 async def choose_category(message: Message, state: FSMContext):
-    global tree, dist_indx
-    user_info = await state.get_data()
-    file_name_list = user_info['file_name_list']
-    type_file = user_info['type_file']
-    if message.text not in file_name_list:
-        return
+    global tree
+    with open("config.json", "r") as file:
+        config = json.load(file)
+        dist_indx = config['dist']
+        user_info = await state.get_data()
+        file_name_list = user_info['file_name_list']
+        type_file = user_info['type_file']
+        if message.text not in file_name_list:
+            return
 
-    file_id = None
-    link = None
-    file_name = None
-    file_path = None
-    files_list = user_info['files_list']
+        file_id = None
+        link = None
+        file_name = None
+        file_path = None
+        files_list = user_info['files_list']
 
-    for file in files_list:
-        if file[2] == message.text:
-            file_id = file[0]
-            file_path = file[1]
-            file_name = file[2]
+        for file in files_list:
+            if file[2] == message.text:
+                file_id = file[0]
+                file_path = file[1]
+                file_name = file[2]
 
+                await state.update_data(file_id=file_id)
+                await state.update_data(link=link)
+                await state.update_data(file_path=file_path)
+                await state.update_data(file_name=file_name)
+                break
+
+        if (type_file == 'template'):
+            link = get_download_link(str(file_path) + '/' + str(file_name))
+            reply_markup = download_file(message)
+            await message.answer(
+                text="Ваш файл загружается..."
+            )
+            await download_with_link(message, link, file_name)
+            await message.answer(
+                text="Ваш файл успешно загружен!",
+                reply_markup=reply_markup
+            )
+
+        if (type_file == 'slide'):
+            await state.clear()
+            await state.set_state(WalkerState.choose_tags)
+
+            list_tags = get_all_tags_by_template_id(file_id)
+            try:
+                list_tags.remove('')
+            except:
+                print('No empty tags')
+            await state.update_data(list_tags=list_tags)
+            await state.update_data()
+            await state.update_data(user_tags=[])
             await state.update_data(file_id=file_id)
-            await state.update_data(link=link)
-            await state.update_data(file_path=file_path)
-            await state.update_data(file_name=file_name)
-            break
 
-    if (type_file == 'template'):
-        link = get_download_link(str(file_path) + '/' + str(file_name))
-        reply_markup = download_file(message)
-        await message.answer(
-            text="Ваш файл загружается..."
-        )
-        await download_with_link(message, link, file_name)
-        await message.answer(
-            text="Ваш файл успешно загружен!",
-            reply_markup=reply_markup
-        )
+            indx_list_start = 0
+            indx_list_end = indx_list_start + dist_indx
+            can_go_right = await check_right(indx_list_end, len(list_tags))
+            can_go_left = await check_left(indx_list_start)
+            await state.update_data(indx_list_start=indx_list_start)
+            await state.update_data(indx_list_end=indx_list_end)
 
-    if (type_file == 'slide'):
-        await state.clear()
-        await state.set_state(WalkerState.choose_tags)
+            await update_user_indx(state, indx_list_start, indx_list_end)
 
-        list_tags = get_all_tags_by_template_id(file_id)
-        try:
-            list_tags.remove('')
-        except:
-            print('No empty tags')
-        await state.update_data(list_tags=list_tags)
-        await state.update_data()
-        await state.update_data(user_tags=[])
-        await state.update_data(file_id=file_id)
-
-        indx_list_start = 0
-        indx_list_end = indx_list_start + dist_indx
-        can_go_right = await check_right(indx_list_end, len(list_tags))
-        can_go_left = await check_left(indx_list_start)
-        await state.update_data(indx_list_start=indx_list_start)
-        await state.update_data(indx_list_end=indx_list_end)
-
-        await update_user_indx(state, indx_list_start, indx_list_end)
-
-        reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-        await message.answer(
-            text="Введите ваши теги через ';' или выберете их из предложенных ниже",
-            reply_markup=reply_markup
-        )
-    if (type_file == 'font'):
-        font_name = get_fonts_by_template_id(file_id)
-        if (len(font_name) == 0):
-            reply_markup = only_main_menu_button_kb(message)
+            reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
             await message.answer(
-                text="Для данной презентации нет шрифтов!",
+                text="Введите ваши теги через ';' или выберете их из предложенных ниже",
                 reply_markup=reply_markup
             )
-        link = get_download_link(file_path + '/' + font_name[0][3])
-        reply_markup = download_file(message)
-        try:
-            await message.answer(
-                text="Дождитесь полной отправки шрифтов..."
-            )
-        except:
-            print('Error')
-        try:
-            await download_with_link(message, link, 'fonts.zip')
-            reply_markup = main_menu_kb(message)
-            await message.answer(
-                text="Все шрифты отправлены!",
-                reply_markup=reply_markup
-            )
-        except:
-            print('Font send error')
-
-
+        if (type_file == 'font'):
+            font_name = get_fonts_by_template_id(file_id)
+            if (len(font_name) == 0):
+                reply_markup = only_main_menu_button_kb(message)
+                await message.answer(
+                    text="Для данной презентации нет шрифтов!",
+                    reply_markup=reply_markup
+                )
+            link = get_download_link(file_path + '/' + font_name[0][3])
+            reply_markup = download_file(message)
+            try:
+                await message.answer(
+                    text="Дождитесь полной отправки шрифтов..."
+                )
+            except:
+                print('Error')
+            try:
+                await download_with_link(message, link, 'fonts.zip')
+                reply_markup = main_menu_kb(message)
+                await message.answer(
+                    text="Все шрифты отправлены!",
+                    reply_markup=reply_markup
+                )
+            except:
+                print('Font send error')
