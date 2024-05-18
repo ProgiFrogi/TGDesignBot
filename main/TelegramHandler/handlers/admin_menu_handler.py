@@ -25,7 +25,7 @@ router = Router()
 # Listing all admins
 admins = [5592902615]
 # try:
-tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+
 # YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
 # except:
 #     tree = Tree()

@@ -37,7 +37,7 @@ class WalkerState(StatesGroup):
 @router.message(F.text.lower() == "корпоративные шрифты", lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "готовые слайды о компании", lambda message: message.from_user.id in users)
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -68,7 +68,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
 @router.message(WalkerState.choose_button, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -97,7 +97,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
 @router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -127,7 +127,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
 @router.message(WalkerState.choose_button, F.text.lower() == "в предыдущую директорию")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -191,7 +191,7 @@ async def take_all_fonts_in_dir(message: Message, state: FSMContext):
 
 @router.message(WalkerState.choose_button)
 async def first_depth_template_find(message: Message, state: FSMContext):
-    global tree
+    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
