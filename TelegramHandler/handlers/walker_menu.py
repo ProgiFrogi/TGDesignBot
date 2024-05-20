@@ -1,5 +1,8 @@
 import json
 import pickle
+
+from aiogram.filters import StateFilter
+
 from TGDesignBot.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type, \
     choose_message_from_type_file, start_send_fonts
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
@@ -157,7 +160,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         # await message.delete()
 
 
-@router.message(WalkerState.choose_button, F.text.lower() == "вывести все")
+@router.message(WalkerState.choose_button, F.text.lower() == "показать все презентации")
 async def output_files(message: Message, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
@@ -183,7 +186,7 @@ async def output_files(message: Message, state: FSMContext):
         # await message.delete()
 
 
-@router.message(WalkerState.choose_button, F.text.lower() == 'забрать все')
+@router.message(WalkerState.choose_button, F.text.lower() == 'забрать все шрифты')
 async def take_all_fonts_in_dir(message: Message, state: FSMContext):
     user_info = await state.get_data()
     path = '/'.join(user_info['path'][1:])
@@ -193,7 +196,10 @@ async def take_all_fonts_in_dir(message: Message, state: FSMContext):
         )
     except:
         print('Proxy error')
-    await start_send_fonts(message, path)
+    try:
+        await start_send_fonts(message, path)
+    except:
+        return
     try:
         await message.answer(
             text='Все шрифты успешно отправлены!'
@@ -214,6 +220,9 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         type_file = user_info['type_file']
 
         if message.text not in child_list:
+            await message.answer(
+                text="Простите, я не понимаю =("
+            )
             return
 
         indx_list_start = 0

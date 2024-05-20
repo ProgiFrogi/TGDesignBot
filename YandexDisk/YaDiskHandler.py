@@ -124,7 +124,9 @@ def get_all_files_in_disk() -> YaDiskInfo:
 def upload_to_disk(dest_path: list, local_path: str):
     check_token(ya_disk)
     path_to_files = list(ya_disk.listdir('/'))[0].path
-    dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + '/'.join(dest_path) + '/' + local_path.split('/')[-1]
+    dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + local_path.split('/')[-1]
+    if len(dest_path) != 0:
+        dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + '/'.join(dest_path) + '/' + local_path.split('/')[-1]
     ya_disk.upload(local_path, dest_path_str)
 
 

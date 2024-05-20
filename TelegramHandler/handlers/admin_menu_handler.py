@@ -23,7 +23,7 @@ from aiogram.types import Message
 router = Router()
 
 # Listing all admins
-admins = [5592902615]
+admins = [5592902615, 2114778573]
 # try:
 
 # YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
@@ -41,7 +41,6 @@ class AdminState(StatesGroup):
                 lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
-    await state.set_state(AdminState.choose_button)
     await message.answer(
         text='Выберете действие',
         reply_markup=admin_panel(message)
@@ -49,8 +48,15 @@ async def admin_menu(message: Message, state: FSMContext):
 
 
 # If user in root
-@router.message(AdminState.choose_button, F.text.lower() == "добавить материал")
+@router.message(F.text.lower() == "добавить материал",
+                lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
 async def first_depth_template_find(message: Message, state: FSMContext):
+    await state.clear()
+    await state.set_state(AdminState.choose_button)
+    await message.answer(
+        text='Выберете действие',
+        reply_markup=admin_panel(message)
+    )
     with open("config.json", "r") as file:
         dist_indx = json.load(file)['dist']
         await state.update_data(state_action="add")
@@ -78,8 +84,15 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         )
 
 
-@router.message(F.text.lower() == "удалить материал", AdminState.choose_button)
+@router.message(F.text.lower() == "удалить материал",
+                lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
 async def admin_menu(message: Message, state: FSMContext):
+    await state.clear()
+    await state.set_state(AdminState.choose_button)
+    await message.answer(
+        text='Выберете действие',
+        reply_markup=admin_panel(message)
+    )
     await state.update_data(state_action="delete")
     tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
@@ -238,7 +251,7 @@ async def download_file(message : Message, bot : Bot, state: FSMContext):
     )
 
 
-@router.message(AdminState.choose_button, F.text.lower() == "вывести все")
+@router.message(AdminState.choose_button, F.text.lower() == "показать все презентации")
 async def output_files(message: Message, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
@@ -275,6 +288,9 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         child_list = user_info['child_list']
 
         if message.text not in child_list:
+            await message.answer(
+                text="Простите, я не понимаю =("
+            )
             return
 
         indx_list_start = 0

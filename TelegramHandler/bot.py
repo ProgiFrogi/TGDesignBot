@@ -6,8 +6,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from TGDesignBot.TelegramHandler.handlers import (simple_func_handler, main_menu_handler, admin_menu_handler,
-                                                            choose_file, admin_choose_file_for_delete)
+                                                  choose_file, admin_choose_file_for_delete, no_handled)
 from TGDesignBot.TelegramHandler.handlers import walker_menu
+from asyncscheduler import AsyncScheduler
+
+
+async def pr():
+    print('I <3 python!')
 
 
 # Func for including router and start work
@@ -17,14 +22,18 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     # Include router
     dp.include_router(main_menu_handler.router)
+    dp.include_router(simple_func_handler.router)
     dp.include_router(admin_menu_handler.router)
     dp.include_router(admin_choose_file_for_delete.router)
-    dp.include_router(simple_func_handler.router)
-    dp.include_router(walker_menu.router)
     dp.include_router(choose_file.router)
+    dp.include_router(walker_menu.router)
+    dp.include_router(no_handled.router)
     # Start bot
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, ssl=False)
+    a = AsyncScheduler()
+    await a.start()
+    await a.repeat(1, 1, pr)
 
 
 async def start_bot():

@@ -1,3 +1,5 @@
+from aiogram.exceptions import TelegramNetworkError
+
 from TGDesignBot.DBHandler import (get_templates_from_child_directories,
                                              get_fonts_from_child_directories,
                                              get_images_from_child_directories)
@@ -116,12 +118,18 @@ async def send_big_file(message: types.Message, link, file_name):
             result_bytes = await response.read()
 
     file.write(result_bytes)
-    await message.reply_document(
-        document=types.BufferedInputFile(
-            file=file.getvalue(),
-            filename=f'{file_name}',
-        ),
-    )
+    try:
+        await message.reply_document(
+            document=types.BufferedInputFile(
+                file=file.getvalue(),
+                filename=f'{file_name}',
+            ),
+        )
+    except TelegramNetworkError:
+        await message.answer(
+            text='Не удалось загрузить файл, попробуйте позже'
+        )
+        raise 'TelegramNetworkError'
 
 async def download_with_link(message : Message, link, file_name):
     await message.bot.send_chat_action(
@@ -134,10 +142,11 @@ async def download_with_link(message : Message, link, file_name):
     ):
         await send_big_file(message, link, file_name)
 
-async def send_file_from_local(message : Message, path):
+async def send_file_from_local(message : Message, path, filename):
     await message.reply_document(
         document=types.FSInputFile(
             path=path,
+            filename=filename
         )
     )
 
@@ -152,7 +161,7 @@ async def send_zips(message : Message,  list_data):
             link = get_download_link(file[1] + '/' + file[3])
             urllib.request.urlretrieve(link, user_zip_path + f'/{file[3]}.zip')
         merge_fonts(user_zip_path, path_to_zip)
-        await send_file_from_local(message, path_to_zip)
+        await send_file_from_local(message, path_to_zip, 'Fonts.zip')
     except:
         await message.answer(text='Извините, возникла техническая ошибка. Сообщите нам: example@mail.com и попробуйте позже')
 

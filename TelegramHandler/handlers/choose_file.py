@@ -91,6 +91,13 @@ async def get_fonts(message: types.Message, state: FSMContext):
     user_info = await state.get_data()
     template_id = user_info["file_id"]
     list_fonts = get_fonts_by_template_id(template_id)
+    reply_markup = only_main_menu_button_kb(message)
+    if len(list_fonts) == 0:
+        await message.answer(
+            text="Для данной презентации нет шрифтов!",
+            reply_markup=reply_markup
+        )
+        return
 
     try:
         await message.answer(
@@ -108,12 +115,7 @@ async def get_fonts(message: types.Message, state: FSMContext):
             reply_markup=reply_markup
         )
     except:
-        reply_markup = only_main_menu_button_kb(message)
-        if len(list_fonts) == 0:
-            await message.answer(
-                text="Для данной презентации нет шрифтов!",
-                reply_markup=reply_markup
-            )
+        pass
 
 
 @router.message(WalkerState.choose_file, F.text.lower() == "как установить шрифты?")
@@ -126,7 +128,7 @@ async def send_info(message: types.Message, state: FSMContext):
     except:
         print('Proxy error')
     path = './Data/Appdata/00 How to install fonts.pdf'
-    await send_file_from_local(message, path)
+    await send_file_from_local(message, path, 'How to install fonts.pdf')
     reply_markup = only_main_menu_button_kb(message)
     await message.answer(
         text='Это вам поможет',
@@ -247,7 +249,7 @@ async def clear_tags(message: Message, state: FSMContext):
         slide_info.add_template_info(template_info)
         get_template_of_slides(path_to_save, slide_info)
         try:
-            await send_file_from_local(message, path_to_save)
+            await send_file_from_local(message, path_to_save, 'Slides.pptx')
         except:
             print('err2')
         reply_markup = download_file(message)
@@ -303,6 +305,9 @@ async def choose_category(message: Message, state: FSMContext):
         file_name_list = user_info['file_name_list']
         type_file = user_info['type_file']
         if message.text not in file_name_list:
+            await message.answer(
+                text="Простите, такого файла здесь нет =("
+            )
             return
 
         file_id = None

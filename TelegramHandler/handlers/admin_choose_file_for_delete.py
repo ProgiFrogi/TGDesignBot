@@ -101,10 +101,7 @@ async def choose_category(message: Message, state: FSMContext):
         try:
             delete_from_disk(str(file_path) + '/' + str(file_name))
         except:
-            print('Proxy err in delete')
-            await message.answer(
-                text='Данный файл успешно удален!'
-            )
+            pass
         await message.answer(
             text='Данный файл успешно удален!'
         )

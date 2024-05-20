@@ -4,7 +4,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-admins = [5592902615]
+admins = [5592902615, 2114778573]
 
 # Стартовое меню
 def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
@@ -43,9 +43,9 @@ async def choose_category_template(key_list : list, message : Message, can_go_le
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
-    kb.button(text="Вывести все")
+    kb.button(text="Показать все презентации")
     if (file_type == 'font'):
-        kb.button(text='Забрать все')
+        kb.button(text='Забрать все шрифты')
     if (can_go_right):
         kb.button(text="Далее")
     if (can_go_left):
@@ -63,7 +63,7 @@ async def admin_choose_category_template(key_list : list, message : Message, can
     kb.adjust(3)
     print('admin_choose')
     if (action == 'delete'):
-        kb.button(text="Вывести все")
+        kb.button(text="Показать все презентации")
         kb.adjust(1)
     if (action == 'add'):
         kb.button(text="Добавить сюда")
@@ -84,5 +84,6 @@ def admin_panel(message : Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Добавить материал")
     kb.button(text="Удалить материал")
+    kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
