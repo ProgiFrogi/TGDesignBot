@@ -1,0 +1,6 @@
+../../../Repo/TGDesignBot/main/.env
+__pycache__
+../../../Repo/TGDesignBot/main/Data/DataFromUser
+../Templates
+../__pycache__
+.env
