@@ -52,7 +52,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_left = await check_left(indx_list_start)
         reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
         await message.answer(
-            text="Выберете одну из файлов",
+            text="Выберите однин из файлов",
             reply_markup=reply_markup
         )
 
@@ -78,7 +78,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
 
@@ -154,7 +154,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_left = await check_left(indx_list_start)
         reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
         await message.answer(
-            text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
+            text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
             reply_markup=reply_markup
         )
         await update_user_indx(state, indx_list_start, indx_list_end)
@@ -179,7 +179,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
         await message.answer(
-            text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
+            text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
             reply_markup=reply_markup
         )
 
@@ -202,7 +202,7 @@ async def clear_tags(message: Message, state: FSMContext):
 
     reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
     await message.answer(
-        text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
+        text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
         reply_markup=reply_markup
     )
 
@@ -291,7 +291,7 @@ async def choose_tags(message: Message, state: FSMContext):
 
     reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
     await message.answer(
-        text=f"Введите ваши теги через ';' или выберете их из предложенных ниже \n Ваши теги: {user_tags}",
+        text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
         reply_markup=reply_markup
     )
 
@@ -365,7 +365,7 @@ async def choose_category(message: Message, state: FSMContext):
 
             reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
             await message.answer(
-                text="Введите ваши теги через ';' или выберете их из предложенных ниже",
+                text="Введите ваши теги через ';' или Выберите их из предложенных ниже",
                 reply_markup=reply_markup
             )
         if (type_file == 'font'):

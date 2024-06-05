@@ -38,7 +38,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
                                             can_go_right)
         await message.answer(
-            text="Выберете один из файлов",
+            text="Выберите один из файлов",
             reply_markup=reply_markup
         )
 
@@ -63,7 +63,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
                                             can_go_right)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
 

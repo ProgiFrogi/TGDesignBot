@@ -227,11 +227,11 @@ async def choose_message_from_type_file(message : Message, state : FSMContext, r
 
     if (type_file in ['template', 'slide']):
         await message.answer(
-            text="Выберете один из файлов",
+            text="Выберите один из файлов",
             reply_markup=reply_markup
         )
     elif(type_file == 'font'):
         await message.answer(
-            text="Выберете презентацию из которой хотите получить ширфты",
+            text="Выберите презентацию из которой хотите получить ширфты",
             reply_markup=reply_markup
         )

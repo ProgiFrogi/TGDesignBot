@@ -42,7 +42,7 @@ class AdminState(StatesGroup):
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
-        text='Выберете действие',
+        text='Выберите действие',
         reply_markup=admin_panel(message)
     )
 
@@ -54,7 +54,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
     await message.answer(
-        text='Выберете действие',
+        text='Выберите действие',
         reply_markup=admin_panel(message)
     )
     with open("config.json", "r") as file:
@@ -79,7 +79,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                       can_go_right, False, action)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
 
@@ -90,7 +90,7 @@ async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
     await message.answer(
-        text='Выберете действие',
+        text='Выберите действие',
         reply_markup=admin_panel(message)
     )
     await state.update_data(state_action="delete")
@@ -115,7 +115,7 @@ async def admin_menu(message: Message, state: FSMContext):
         reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                       can_go_right, False, action)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
 
@@ -142,7 +142,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                       can_go_right, can_go_back, action)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
         await update_user_indx(state, indx_list_start, indx_list_end)
@@ -169,7 +169,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                             can_go_right, False, action)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
 
@@ -199,7 +199,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                             can_go_right, False, action)
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
         await update_user_info(state, user_data, indx_list_start, indx_list_end, can_go_back, child_list)
@@ -274,7 +274,7 @@ async def output_files(message: Message, state: FSMContext):
                                             can_go_right)
         await admin_from_chose_dir_to_choose_file(message, state, files_list, file_name_list, AdminState.choose_file)
         await message.answer(
-            text="Выберете один из файлов",
+            text="Выберите один из файлов",
             reply_markup=reply_markup
         )
 
@@ -305,7 +305,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
                                                             can_go_right, can_go_back, user_info['state_action'])
         await message.answer(
-            text="Выберете одну из папок, или выведите все вложенные в эти папки файлы",
+            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
         await update_user_info(state, user_data, indx_list_start, indx_list_end, can_go_back, child_list)
