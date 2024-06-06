@@ -13,7 +13,6 @@ from TGDesignBot.DBHandler import delete_template
 
 from .YaDiskInfo import TemplateInfo
 load_dotenv()
-print(str(os.getenv('YANDEX_DISK_TOKEN')))
 ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
 
 
