@@ -55,12 +55,16 @@ def install_templates(path: str, templates: list):
 def get_slides_information(path: str) -> list:
     exists(path)
     slides_info = []
-    with slides.Presentation(path) as presentation:
-        for author in presentation.comment_authors:
-            for comment in author.comments:
-                slides_info.append(SlideInfo(comment.slide.slide_number - 1,
-                                             ";".join(comment.text.split())))
-    return slides_info
+    try:
+        with slides.Presentation(path) as presentation:
+            for author in presentation.comment_authors:
+                for comment in author.comments:
+                    slides_info.append(SlideInfo(comment.slide.slide_number - 1,
+                                                 ";".join(comment.text.split())))
+    except Exception as e:
+        print(e)
+    finally:
+        return slides_info
 
 
 def exists(path: str):

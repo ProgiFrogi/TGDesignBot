@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 admins = [5592902615, 2114778573]
 
+
 # Стартовое меню
 def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -17,16 +18,21 @@ def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     if (message.from_user.id in admins):
         kb.button(text="Админ-панель")
     return kb.as_markup(resize_keyboard=True)
+
+
 def only_main_menu_button_kb(message: Message):
     kb = ReplyKeyboardBuilder()
     kb.button(text="В главное меню")
     return kb.as_markup(resize_keyboard=True)
+
 
 def main_menu_kb(message: Message):
     kb = ReplyKeyboardBuilder()
     kb.button(text="Как установить шрифты?")
     kb.button(text="В главное меню")
     return kb.as_markup(resize_keyboard=True)
+
+
 # Кнопки с выбором категорий
 def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -37,9 +43,9 @@ def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-async def choose_category_template(key_list : list, message : Message, can_go_left : bool, can_go_right : bool,
-                                   can_go_back : bool, file_type : str) -> ReplyKeyboardMarkup:
 
+async def choose_category_template(key_list: list, message: Message, can_go_left: bool, can_go_right: bool,
+                                   can_go_back: bool, file_type: str) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
@@ -56,7 +62,9 @@ async def choose_category_template(key_list : list, message : Message, can_go_le
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-async def admin_choose_category_template(key_list : list, message : Message, can_go_left : bool, can_go_right : bool, can_go_back : bool, action : str) -> ReplyKeyboardBuilder:
+
+async def admin_choose_category_template(key_list: list, message: Message, can_go_left: bool, can_go_right: bool,
+                                         can_go_back: bool, action: str) -> ReplyKeyboardBuilder:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
@@ -80,7 +88,7 @@ async def admin_choose_category_template(key_list : list, message : Message, can
     return kb.as_markup(resize_keyboard=True)
 
 
-def admin_panel(message : Message) -> ReplyKeyboardMarkup:
+def admin_panel(message: Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Добавить материал")
     kb.button(text="Удалить материал")

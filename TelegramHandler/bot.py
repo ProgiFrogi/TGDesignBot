@@ -9,7 +9,7 @@ from aiogram.types import BotCommand
 from TGDesignBot.TelegramHandler.handlers import (simple_func_handler, main_menu_handler, admin_menu_handler,
                                                   choose_file, admin_choose_file_for_delete, no_handled)
 from TGDesignBot.TelegramHandler.handlers import walker_menu
-from asyncscheduler import AsyncScheduler
+
 
 async def setup_bot_commands(bot: Bot):
     bot_commands = [
@@ -18,11 +18,6 @@ async def setup_bot_commands(bot: Bot):
         BotCommand(command="/help", description="Напишите нам, для решения проблем!")
     ]
     await bot.set_my_commands(bot_commands)
-
-
-
-async def pr():
-    print('I <3 python!')
 
 
 # Func for including router and start work
@@ -42,9 +37,6 @@ async def main():
     await setup_bot_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, ssl=False)
-    a = AsyncScheduler()
-    await a.start()
-    await a.repeat(1, 1, pr)
 
 
 async def start_bot():
