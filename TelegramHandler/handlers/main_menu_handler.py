@@ -3,13 +3,15 @@ from aiogram.filters import Command
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 from ..keyboards.start_and_simple_button import start_menu_kb, choose_category_kb
+from ..keyboards.InlineKeyboards.searchKB import build_choose_kb
 
 router = Router()
 
-users = [5592902615, 2114778573, 928962436]
+users = [5592902615, 2114778573, 928962436, 986985057]
+
 
 class UserStates(StatesGroup):
     in_main_menu = State()
@@ -29,6 +31,7 @@ async def cmd_start_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
+
 @router.message(StateFilter(default_state), Command(commands=["menu"]), lambda message: message.from_user.id in users)
 @router.message(default_state, F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
@@ -37,6 +40,8 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         text="Вы и так в главном меню...",
         reply_markup=start_menu_kb(message)
     )
+
+
 @router.message(Command(commands=["menu"]), lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
@@ -46,11 +51,26 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
+
 @router.message(StateFilter(None), Command(commands=["choose_category"]), lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "готовлю презентацию сам, нужны материалы")
+@router.message(Command("cat", prefix="!/"))
 async def choose_category_handler(message: Message, state: FSMContext):
+    reply_markup = await build_choose_kb()
     await message.answer(
         text="Что вас интересует?",
-        reply_markup=choose_category_kb(message)
+        reply_markup=reply_markup
+    )
+    await state.set_state(UserStates.in_choose_category)
+
+
+@router.message(StateFilter(None), Command(commands=["choose_category"]), lambda message: message.from_user.id in users)
+@router.message(Command("cat", prefix="!/"))
+@router.callback_query(F.data == "menu_choose")
+async def choose_category_handler(callback_query: CallbackQuery, state: FSMContext):
+    reply_markup = await build_choose_kb()
+    await callback_query.message.edit_text(
+        text="Что вас интересует?",
+        reply_markup=reply_markup
     )
     await state.set_state(UserStates.in_choose_category)

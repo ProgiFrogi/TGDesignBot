@@ -9,6 +9,10 @@ from aiogram.types import BotCommand
 from TGDesignBot.TelegramHandler.handlers import (simple_func_handler, main_menu_handler, admin_menu_handler,
                                                   choose_file, admin_choose_file_for_delete, no_handled)
 from TGDesignBot.TelegramHandler.handlers import walker_menu
+from TGDesignBot.TelegramHandler.handlers.query_handlers import walker_menu as q_walker_menu
+from TGDesignBot.TelegramHandler.handlers.query_handlers import choose_file as q_choose_file
+from TGDesignBot.TelegramHandler.handlers.query_handlers import admin_menu_handler as q_admin_menu_handler
+from TGDesignBot.TelegramHandler.handlers.query_handlers import admin_choose_file_for_delete as q_admin_choose_file_for_delete
 from asyncscheduler import AsyncScheduler
 
 async def setup_bot_commands(bot: Bot):
@@ -32,6 +36,10 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     # Include router
     dp.include_router(main_menu_handler.router)
+    dp.include_router(q_admin_menu_handler.router)
+    dp.include_router(q_admin_choose_file_for_delete.router)
+    dp.include_router(q_walker_menu.router)
+    dp.include_router(q_choose_file.router)
     dp.include_router(simple_func_handler.router)
     dp.include_router(admin_menu_handler.router)
     dp.include_router(admin_choose_file_for_delete.router)

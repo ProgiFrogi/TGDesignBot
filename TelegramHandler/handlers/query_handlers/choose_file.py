@@ -1,7 +1,7 @@
 import json
 
 from TGDesignBot.utility.tg_utility import can_go_right as check_right, download_with_link, \
-    send_file_from_local
+    send_file_from_local, download_with_link_query, send_file_from_local_for_query
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import update_indx as update_user_indx
 from TGDesignBot.DBHandler import (get_fonts_by_template_id,
@@ -14,17 +14,18 @@ from aiogram import types
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
-from ..keyboards import main_menu_kb, only_main_menu_button_kb
-from ..keyboards.choose_file_keyboard import choose_file_kb, download_file, work_with_tags
+from ...keyboards import main_menu_kb, only_main_menu_button_kb, choose_catagory_callback, choose_catagory_text, \
+    error_in_send_file, main_menu_kb_query, choose_tags_query
+from ...keyboards.choose_file_keyboard import choose_file_kb, download_file, work_with_tags, choose_file_kb_query, \
+    download_file_query, work_with_tags_query
 from TGDesignBot.pptxHandler import get_template_of_slides, SlideInfo, remove_template
 from TGDesignBot.YandexDisk import get_download_link
 
 router = Router()
 
 dist_indx = 1
-
 
 class WalkerState(StatesGroup):
     # В состоянии храним child_list, indx_list_start\end, can_go_back
@@ -33,9 +34,8 @@ class WalkerState(StatesGroup):
     choose_file = State()
     choose_tags = State()
 
-
-@router.message(WalkerState.choose_file, F.text.lower() == "далее")
-async def first_depth_template_find(message: Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_file, F.data == "next")
+async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -50,17 +50,20 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
-        await message.answer(
-            text="Выберите однин из файлов",
+
+        reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
+                                                  can_go_right)
+        text = await choose_catagory_text(file_name_list[indx_list_start:indx_list_end])
+
+        await callback_query.message.edit_text(
+            text=text,
             reply_markup=reply_markup
         )
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
-
-@router.message(WalkerState.choose_file, F.text.lower() == "назад")
-async def first_depth_template_find(message: Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_file, F.data == "prev")
+async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -76,31 +79,34 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left, can_go_right)
-        await message.answer(
-            text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
+        reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
+                                                  can_go_right)
+        text = await choose_catagory_text(file_name_list[indx_list_start:indx_list_end])
+
+        await callback_query.message.edit_text(
+            text=text,
             reply_markup=reply_markup
         )
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
-
-@router.message(WalkerState.choose_file, F.text.lower() == "получить шрифты")
-@router.message(WalkerState.choose_tags, F.text.lower() == "получить шрифты")
-async def get_fonts(message: types.Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_file, F.data == "get_fonts")
+@router.callback_query(WalkerState.choose_tags, F.data == "get_fonts")
+async def get_fonts(callback_query: CallbackQuery, state: FSMContext):
     user_info = await state.get_data()
     template_id = user_info["file_id"]
     list_fonts = get_fonts_by_template_id(template_id)
-    reply_markup = only_main_menu_button_kb()
+
     if len(list_fonts) == 0:
-        await message.answer(
+        reply_markup = await error_in_send_file()
+        await callback_query.message.edit_text(
             text="Для данной презентации нет шрифтов!",
             reply_markup=reply_markup
         )
         return
 
     try:
-        await message.answer(
+        await callback_query.message.edit_text(
             text="Дождитесь полной отправки шрифтов..."
         )
     except:
@@ -108,36 +114,38 @@ async def get_fonts(message: types.Message, state: FSMContext):
     try:
         path = list_fonts[0][1] + '/' + list_fonts[0][3]
         link = get_download_link(path)
-        await download_with_link(message, link, 'fonts.zip')
-        reply_markup = main_menu_kb()
-        await message.answer(
+        await download_with_link_query(callback_query, link, 'fonts.zip')
+        reply_markup = main_menu_kb_query()
+        await callback_query.message.delete()
+        await callback_query.bot.send_message(
+            chat_id=callback_query.from_user.id,
             text="Все шрифты отправлены!",
             reply_markup=reply_markup
         )
     except:
         pass
 
-
-@router.message(WalkerState.choose_file, F.text.lower() == "как установить шрифты?")
-@router.message(WalkerState.choose_tags, F.text.lower() == "как установить шрифты?")
-async def send_info(message: types.Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_file, F.data == "install_fonts_help")
+@router.callback_query(WalkerState.choose_tags, F.data == "install_fonts_help")
+async def send_info(callback_query: CallbackQuery):
     try:
-        await message.answer(
+        await callback_query.message.edit_text(
             text='Дождитесь отправки файла...'
         )
     except:
         print('Proxy error')
     path = './Data/Appdata/00 How to install fonts.pdf'
-    await send_file_from_local(message, path, 'How to install fonts.pdf')
-    reply_markup = only_main_menu_button_kb()
-    await message.answer(
-        text='Это вам поможет',
+    await send_file_from_local_for_query(callback_query, path, 'How to install fonts.pdf')
+    reply_markup = await error_in_send_file()
+    await callback_query.message.delete()
+    await callback_query.bot.send_message(
+        chat_id=callback_query.from_user.id,
+        text='Это вам поможет!',
         reply_markup=reply_markup
     )
 
-
-@router.message(WalkerState.choose_tags, F.text.lower() == "далее")
-async def first_depth_template_find(message: Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_tags, F.data == "next")
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -152,15 +160,16 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         can_go_right = await check_right(indx_list_end, len(list_tags))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-        await message.answer(
-            text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
+        text = await choose_tags_query(list_tags[indx_list_start:indx_list_end])
+        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        await callback_query.message.edit_text(
+            text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n" + text,
             reply_markup=reply_markup
         )
         await update_user_indx(state, indx_list_start, indx_list_end)
 
-@router.message(WalkerState.choose_tags, F.text.lower() == "назад")
-async def first_depth_template_find(message: Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_tags, F.data == "prev")
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -176,18 +185,18 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         can_go_right = await check_right(indx_list_end, len(list_tags))
         can_go_left = await check_left(indx_list_start)
-
-        reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-        await message.answer(
-            text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
+        text = await choose_tags_query(list_tags[indx_list_start:indx_list_end])
+        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        await callback_query.message.edit_text(
+            text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n" + text,
             reply_markup=reply_markup
         )
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
 
-@router.message(WalkerState.choose_tags, F.text.lower() == "очистить теги")
-async def clear_tags(message: Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_tags, F.data == "clear_tags")
+async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
     # Clear user_tags
     await state.update_data(user_tags=[])
     # Default output
@@ -200,15 +209,17 @@ async def clear_tags(message: Message, state: FSMContext):
     can_go_right = await check_right(indx_list_end, len(list_tags))
     can_go_left = await check_left(indx_list_start)
 
-    reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-    await message.answer(
-        text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
+    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+
+    text = f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n"
+    text += await choose_tags_query(list_tags[indx_list_start:indx_list_end])
+    await callback_query.message.edit_text(
+        text=text,
         reply_markup=reply_markup
     )
 
-
-@router.message(WalkerState.choose_tags, F.text.lower() == "найти слайды по введеным тегам")
-async def clear_tags(message: Message, state: FSMContext):
+@router.callback_query(WalkerState.choose_tags, F.data == "find_with_tags")
+async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
     user_info = await state.get_data()
     user_tags = user_info['user_tags']
     template_id = user_info['file_id']
@@ -223,10 +234,10 @@ async def clear_tags(message: Message, state: FSMContext):
         can_go_right = await check_right(indx_list_end, len(list_tags))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
 
         try:
-            await message.answer(
+            await callback_query.message.answer(
                 text=f'Нет слайдов в данной презентации, содержащих следующие теги: \n {user_tags}',
                 reply_markup=reply_markup
             )
@@ -234,12 +245,12 @@ async def clear_tags(message: Message, state: FSMContext):
             print('error')
     else:
         try:
-            await message.answer(
+            await callback_query.message.edit_text(
                 text='Дождитесь, пока файл загрузится...'
             )
         except:
             print('error2')
-        path_to_save = f'./Data/slides/{message.from_user.id}.pptx'
+        path_to_save = f'./Data/slides/{callback_query.message.from_user.id}.pptx'
         slide_info = SlideInfo(slides_list[0][0], ';'.join(user_tags))
         for slide in slides_list[1:]:
             slide_info.add_id(slide[0])
@@ -249,12 +260,13 @@ async def clear_tags(message: Message, state: FSMContext):
         slide_info.add_template_info(template_info)
         get_template_of_slides(path_to_save, slide_info)
         try:
-            await send_file_from_local(message, path_to_save, 'Slides.pptx')
+            await send_file_from_local_for_query(callback_query, path_to_save, 'Slides.pptx')
         except:
             print('err2')
-        reply_markup = download_file()
-        await message.answer(
-            text='Ваш файл успешно загружен!',
+        reply_markup = download_file_query()
+        await callback_query.bot.send_message(
+            chat_id=callback_query.from_user.id,
+            text="Ваш файл успешно загружен!",
             reply_markup=reply_markup
         )
         remove_template(path_to_save)
@@ -289,26 +301,58 @@ async def choose_tags(message: Message, state: FSMContext):
     can_go_left = await check_left(indx_list_start)
     await state.update_data(user_tags=user_tags)
 
-    reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+    text = await choose_tags_query(list_tags[indx_list_start:indx_list_end])
     await message.answer(
-        text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags}",
+        text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n" + text,
         reply_markup=reply_markup
     )
 
+@router.callback_query(WalkerState.choose_tags)
+async def choose_tags(callback_query: CallbackQuery, state: FSMContext):
+    user_info = await state.get_data()
+    user_tags = user_info['user_tags']
+    indx_list_start = user_info['indx_list_start']
+    indx_list_end = user_info['indx_list_end']
+    list_tags = user_info['list_tags']
+    print(list_tags)
+    tag_index = indx_list_start + int(callback_query.data) - 1
+    tag = list_tags[tag_index]
 
-@router.message(WalkerState.choose_file)
-async def choose_category(message: Message, state: FSMContext):
+    text = ""
+
+
+    if tag not in user_tags:
+        user_tags.append(list_tags[tag_index])
+        text += f"Тег {tag} успешно добавлен! \n"
+    else:
+        text += "Данный тег уже есть в списке! \n"
+
+    text += f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n"
+    can_go_right = await check_right(indx_list_end, len(list_tags))
+    can_go_left = await check_left(indx_list_start)
+    await state.update_data(user_tags=user_tags)
+
+    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+    text += await choose_tags_query(list_tags[indx_list_start:indx_list_end])
+    await callback_query.message.edit_text(
+        text=text,
+        reply_markup=reply_markup
+    )
+
+@router.callback_query(WalkerState.choose_file)
+async def choose_category(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
         user_info = await state.get_data()
         file_name_list = user_info['file_name_list']
         type_file = user_info['type_file']
-        if message.text not in file_name_list:
-            await message.answer(
-                text="Простите, такого файла здесь нет =("
-            )
-            return
+        indx_list_start = user_info['indx_list_start']
+        indx_child = indx_list_start + int(callback_query.data) - 1
+        file_name_list = user_info['file_name_list']
+        file_name_from_list = file_name_list[indx_child]
+
 
         file_id = None
         link = None
@@ -317,7 +361,7 @@ async def choose_category(message: Message, state: FSMContext):
         files_list = user_info['files_list']
 
         for file in files_list:
-            if file[2] == message.text:
+            if file[2] == file_name_from_list:
                 file_id = file[0]
                 file_path = file[1]
                 file_name = file[2]
@@ -330,15 +374,27 @@ async def choose_category(message: Message, state: FSMContext):
 
         if (type_file == 'template'):
             link = get_download_link(str(file_path) + '/' + str(file_name))
-            reply_markup = download_file()
-            await message.answer(
+            await callback_query.message.edit_text(
                 text="Ваш файл загружается..."
             )
-            await download_with_link(message, link, file_name)
-            await message.answer(
-                text="Ваш файл успешно загружен!",
-                reply_markup=reply_markup
-            )
+            try:
+                await download_with_link_query(callback_query, link, file_name)
+                reply_markup = download_file_query()
+                await callback_query.message.delete()
+                await callback_query.bot.send_message(
+                    chat_id=callback_query.from_user.id,
+                    text="Ваш файл успешно загружен!",
+                    reply_markup=reply_markup
+                )
+
+            except:
+                reply_markup = await error_in_send_file()
+                await callback_query.message.delete()
+                await callback_query.bot.send_message(
+                    chat_id=callback_query.from_user.id,
+                    text="Ошибка времени ожидания, сообщите о проблеме example@yandex.ru, или попробуйте позже",
+                    reply_markup=reply_markup
+                )
 
         if (type_file == 'slide'):
             await state.clear()
@@ -350,7 +406,6 @@ async def choose_category(message: Message, state: FSMContext):
             except:
                 print('No empty tags')
             await state.update_data(list_tags=list_tags)
-            await state.update_data()
             await state.update_data(user_tags=[])
             await state.update_data(file_id=file_id)
 
@@ -363,33 +418,37 @@ async def choose_category(message: Message, state: FSMContext):
 
             await update_user_indx(state, indx_list_start, indx_list_end)
 
-            reply_markup = await work_with_tags(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-            await message.answer(
-                text="Введите ваши теги через ';' или Выберите их из предложенных ниже",
+            reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+            text = await choose_catagory_text(list_tags[indx_list_start:indx_list_end])
+            await callback_query.message.edit_text(
+                text="Введите ваши теги через ';' или Выберите их из предложенных ниже \n \n" + text,
                 reply_markup=reply_markup
             )
         if (type_file == 'font'):
             font_name = get_fonts_by_template_id(file_id)
             if (len(font_name) == 0):
-                reply_markup = only_main_menu_button_kb()
-                await message.answer(
+                reply_markup = await error_in_send_file()
+                await callback_query.message.edit_text(
                     text="Для данной презентации нет шрифтов!",
                     reply_markup=reply_markup
                 )
             link = get_download_link(file_path + '/' + font_name[0][3])
-            reply_markup = download_file()
+            reply_markup = download_file_query()
             try:
-                await message.answer(
+                await callback_query.message.edit_text(
                     text="Дождитесь полной отправки шрифтов..."
                 )
             except:
                 print('Error')
             try:
-                await download_with_link(message, link, 'fonts.zip')
-                reply_markup = main_menu_kb()
-                await message.answer(
+                await download_with_link_query(callback_query, link, 'fonts.zip')
+                reply_markup = await error_in_send_file()
+                await callback_query.message.delete()
+                await callback_query.bot.send_message(
+                    chat_id=callback_query.message.chat.id,
                     text="Все шрифты отправлены!",
                     reply_markup=reply_markup
                 )
             except:
                 print('Font send error')
+
