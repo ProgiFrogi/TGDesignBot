@@ -29,6 +29,10 @@ class Tree:
         delete_node = [x for x in lst[0].children if x.name == name]
         lst[0].children.remove(delete_node[0])
 
+    # Checking is node is leaf of tree.
+    def is_leaf(self, name: str) -> bool:
+        return len(self.get_children(name)) == 0
+
     # Get a list of children's names
     def get_children(self, name: str) -> list:
         children_list = []
