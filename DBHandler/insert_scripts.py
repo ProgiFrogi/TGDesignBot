@@ -13,11 +13,8 @@ def __insert_single_value__(sql, *obj) -> int:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 # execute the INSERT statement
-                print(sql)
                 cur.execute(sql, obj)
                 row = cur.fetchone()
-                print(row[0])
-                print(row[1])
                 if row:
                     obj_id = row[0]
                 # commit the changes to the database

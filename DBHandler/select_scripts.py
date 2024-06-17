@@ -50,9 +50,13 @@ def get_templates_from_directory(path: str) -> list:
     return __get_list_of_obj__(sql, path)
 
 
-def get_template_id_by_name(path: str, name: str) -> int:
+def get_template_id_by_name(path: str, name: str) -> int | None:
     sql = "select * from templates where path = %s and name = %s"
-    return __get_list_of_obj__(sql, path, name)[0][0]
+    result = __get_list_of_obj__(sql, path, name)
+    if len(result) == 0:
+        return None
+    else:
+        return result[0][0]
 
 
 def get_templates_by_index(index: str) -> list:

@@ -12,6 +12,7 @@ from TGDesignBot.YandexDisk.YaDiskInfo import YaDiskInfo
 from TGDesignBot.DBHandler import delete_template
 
 from .YaDiskInfo import TemplateInfo
+
 load_dotenv()
 ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
 
@@ -75,21 +76,22 @@ def get_last_added_files(last_updated_time: datetime.datetime, ya_disk_info: YaD
 # Recursive find deleted templates from last update in trash box of YaDisk.
 # Takes the current directory and find files in it.
 def __get_templates_from_trash__(directory: str,
-                                 last_updated_time: datetime.datetime,
                                  ya_disk_info: YaDiskInfo):
     for item in ya_disk.trash_listdir(directory):
         if item.is_dir() and (not is_images(item)) and (not is_graphics(item)):
-            __get_templates_from_trash__(item.path, last_updated_time, ya_disk_info)
-
-        elif last_updated_time < item.deleted and is_template(item):
-            ya_disk_info.add_template(item.name, item.path[: item.path.rfind('/')])
+            __get_templates_from_trash__(item.path, ya_disk_info)
+        elif is_template(item):
+            path = directory.split('/')
+            path[1] = path[1][: path[1].rfind('_')]
+            path = '/'.join(path[1:])
+            ya_disk_info.add_template(item.name, path)
 
 
 # Removes outdated information from the folder tree.
 def __delete_nodes__(directory: str, tree: Tree):
     for item in ya_disk.trash_listdir(directory):
         if item.is_dir():
-            __delete_nodes__(item.path, tree)
+            __delete_nodes__(item.path  , tree)
             tree.delete_node(item.name)
 
 
@@ -112,8 +114,9 @@ def update_tree(tree: Tree, last_updated_time):
     __add_nodes__('/', last_updated_time, tree)
     with open("Tree/ObjectTree.pkl", "wb") as fp:
         pickle.dump(tree, fp)
-    last_updated_time = datetime.datetime.now(tz=datetime.timezone.utc)
 
+    # Updating last_updated_time in json.
+    last_updated_time = datetime.datetime.now(tz=datetime.timezone.utc)
     with open("config.json", "r") as jsonFile:
         data = json.load(jsonFile)
 
@@ -138,7 +141,8 @@ def upload_to_disk(dest_path: list, local_path: str):
     path_to_files = list(ya_disk.listdir('/'))[0].path
     dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + local_path.split('/')[-1]
     if len(dest_path) != 0:
-        dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + '/'.join(dest_path) + '/' + local_path.split('/')[-1]
+        dest_path_str = path_to_files[:path_to_files.rfind('/') + 1] + '/'.join(dest_path) + '/' + \
+                        local_path.split('/')[-1]
     ya_disk.upload(local_path, dest_path_str)
 
 

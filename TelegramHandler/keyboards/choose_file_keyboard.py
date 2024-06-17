@@ -4,8 +4,9 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-async def choose_file_kb(key_list : list, message : Message, can_go_left : bool,
-                         can_go_right : bool) -> ReplyKeyboardMarkup:
+
+async def choose_file_kb(key_list: list, message: Message, can_go_left: bool,
+                         can_go_right: bool) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
@@ -64,7 +65,6 @@ async def choose_file_kb_query(key_list: list, can_go_left: bool, can_go_right: 
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
-
 def download_file() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Получить шрифты")
@@ -103,8 +103,9 @@ def back_in_last_state() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
-async def work_with_tags(key_list : list, can_go_left : bool,
-                         can_go_right : bool, state : FSMContext) -> ReplyKeyboardMarkup:
+
+async def work_with_tags(key_list: list, can_go_left: bool,
+                         can_go_right: bool, state: FSMContext) -> ReplyKeyboardMarkup:
     user_info = await state.get_data()
     user_tags = []
     user_tags = user_info['user_tags']

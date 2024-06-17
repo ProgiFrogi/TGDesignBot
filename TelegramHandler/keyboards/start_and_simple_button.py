@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 
 admins = [5592902615, 2114778573]
 
+
 # Стартовое меню
 def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -18,12 +19,13 @@ def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     if (message.from_user.id in admins):
         kb.button(text="Админ-панель")
     return kb.as_markup(resize_keyboard=True)
-def only_main_menu_button_kb():
+
+def only_main_menu_button_kb(message: Message):
     kb = ReplyKeyboardBuilder()
     kb.button(text="В главное меню")
     return kb.as_markup(resize_keyboard=True)
 
-def main_menu_kb():
+def main_menu_kb(message: Message):
     kb = ReplyKeyboardBuilder()
     kb.button(text="Как установить шрифты?")
     kb.button(text="В главное меню")
@@ -86,11 +88,11 @@ async def choose_catagory_callback(key_list: list, can_go_left: bool, can_go_rig
     if (can_go_left and can_go_right):
         rows.append([
             InlineKeyboardButton(
-                    text='Назад',
+                    text='⬅Назад',
                     callback_data='prev'
                     ),
             InlineKeyboardButton(
-                text='Далее',
+                text='Далее➡',
                 callback_data='next'
             )
         ])
@@ -98,14 +100,14 @@ async def choose_catagory_callback(key_list: list, can_go_left: bool, can_go_rig
     elif (can_go_right):
         rows.append([
             InlineKeyboardButton(
-                text='Далее',
+                text='Далее➡',
                 callback_data='next'
             )
         ])
     elif (can_go_left):
         rows.append([
             InlineKeyboardButton(
-                text='Назад',
+                text='⬅Назад',
                 callback_data='prev'
             )
         ])
@@ -164,9 +166,8 @@ async def error_in_send_file() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
-async def choose_category_template(key_list : list, message : Message, can_go_left : bool, can_go_right : bool,
-                                   can_go_back : bool, file_type : str) -> ReplyKeyboardMarkup:
-
+async def choose_category_template(key_list: list, can_go_left: bool, can_go_right: bool,
+                                   can_go_back: bool, file_type: str) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
@@ -183,7 +184,9 @@ async def choose_category_template(key_list : list, message : Message, can_go_le
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-async def admin_choose_category_template(key_list : list, message : Message, can_go_left : bool, can_go_right : bool, can_go_back : bool, action : str) -> ReplyKeyboardBuilder:
+
+async def admin_choose_category_template(key_list: list, message: Message, can_go_left: bool, can_go_right: bool,
+                                         can_go_back: bool, action: str) -> ReplyKeyboardBuilder:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
@@ -216,26 +219,25 @@ async def admin_choose_category_template_query(key_list : list, can_go_left : bo
     if (can_go_left and can_go_right):
         rows.append([
             InlineKeyboardButton(
-                    text='Назад',
+                    text='⬅Назад',
                     callback_data='prev'
                     ),
             InlineKeyboardButton(
-                text='Далее',
+                text='Далее➡',
                 callback_data='next'
             )
         ])
-
     elif (can_go_right):
         rows.append([
             InlineKeyboardButton(
-                text='Далее',
+                text='Далее➡',
                 callback_data='next'
             )
         ])
     elif (can_go_left):
         rows.append([
             InlineKeyboardButton(
-                text='Назад',
+                text='⬅Назад',
                 callback_data='prev'
             )
         ])

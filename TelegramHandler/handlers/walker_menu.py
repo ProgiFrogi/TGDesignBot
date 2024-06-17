@@ -63,7 +63,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         path.append(message.text)
         await state.update_data(file_name_list=[])
         await update_user_info(state, path, 0, indx_list_end, False, child_list)
-        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
+        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, False, type_file)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
@@ -90,7 +90,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
+        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
@@ -119,7 +119,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
+        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
@@ -150,7 +150,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_back = await check_back(path)
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
+        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
@@ -231,7 +231,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_back = await check_back(path)
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
+        reply_markup = await choose_category_template(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
         await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
         await message.answer(

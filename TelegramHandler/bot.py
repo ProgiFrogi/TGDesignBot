@@ -24,11 +24,6 @@ async def setup_bot_commands(bot: Bot):
     await bot.set_my_commands(bot_commands)
 
 
-
-async def pr():
-    print('I <3 python!')
-
-
 # Func for including router and start work
 async def main():
     load_dotenv()
@@ -50,9 +45,6 @@ async def main():
     await setup_bot_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, ssl=False)
-    a = AsyncScheduler()
-    await a.start()
-    await a.repeat(1, 1, pr)
 
 
 async def start_bot():
