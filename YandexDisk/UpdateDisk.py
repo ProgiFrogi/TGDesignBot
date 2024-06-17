@@ -1,6 +1,7 @@
 import copy
 import datetime
 import json
+import pickle
 
 from TGDesignBot.DBHandler import get_template_id_by_name, delete_template
 from TGDesignBot.DBHandler.fill_database import fill_database
@@ -23,7 +24,10 @@ def update_db(last_updated_time: datetime.datetime):
 
 
 # Update actuality of database and tree.
-def update_tree_and_db(tree: Tree):
+def update_tree_and_db():
+    with open("Tree/ObjectTree.pkl", "rb") as tree_file:
+        tree = pickle.load(tree_file)
+
     last_updated_time = datetime.datetime.fromisoformat(json.load(open("config.json"))["last-update-time"])
     time_copy = copy.deepcopy(last_updated_time)
     update_tree(tree, last_updated_time)
