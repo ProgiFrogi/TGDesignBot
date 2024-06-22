@@ -1,3 +1,5 @@
+import json
+
 from aiogram.exceptions import TelegramNetworkError
 from aiogram.methods import send_document
 
@@ -220,7 +222,9 @@ async def send_zips(message: (Message, CallbackQuery), list_data):
         await send_file_from_local(message, path_to_zip, 'Fonts.zip')
     except:
         await message.answer(
-            text='Извините, возникла техническая ошибка. Сообщите нам: example@mail.com и попробуйте позже')
+            text=f'Извините, возникла техническая ошибка. Сообщите нам: '
+                 f'{json.load(open("./config.json"))["email"]} и '
+                 'попробуйте позже')
 
     shutil.rmtree(user_zip_path)
     os.remove(path_to_zip)

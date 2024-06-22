@@ -421,7 +421,8 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
                 await callback_query.message.delete()
                 await callback_query.bot.send_message(
                     chat_id=callback_query.from_user.id,
-                    text="Ошибка времени ожидания, сообщите о проблеме example@yandex.ru, или попробуйте позже",
+                    text=f"Ошибка времени ожидания, сообщите о проблеме {json.load(open('./config.json'))['email']}, "
+                         f"или попробуйте позже",
                     reply_markup=reply_markup
                 )
 
