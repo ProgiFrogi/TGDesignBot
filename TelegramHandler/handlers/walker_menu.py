@@ -23,10 +23,10 @@ router = Router()
 users = [5592902615, 2114778573, 928962436, 986985057]
 
 try:
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
 except:
     tree = ClassTree.Tree()
-    with open("Tree/ObjectTree.pkl", "wb") as fp:
+    with open("./Tree/ObjectTree.pkl", "wb") as fp:
         pickle.dump(tree, fp)
 
 
@@ -42,14 +42,14 @@ class WalkerState(StatesGroup):
 @router.message(F.text.lower() == "корпоративные шрифты", lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "готовые слайды о компании", lambda message: message.from_user.id in users)
 async def first_depth_template_find(message: Message, state: FSMContext):
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
         await state.clear()
         await state.set_state(WalkerState.choose_button)
-        type_file = await set_file_type(message, state)
+        type_file = await set_file_type(str(message), state)
         # take list of dirs
         child_list = tree.get_children(tree.root.name)
 
@@ -71,10 +71,11 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         )
         # await message.delete()
 
+
 @router.message(WalkerState.choose_button, F.text.lower() == "далее")
 async def first_depth_template_find(message: Message, state: FSMContext):
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
@@ -99,6 +100,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         await update_user_indx(state, indx_list_start, indx_list_end)
         # await message.delete()
+
 
 @router.message(WalkerState.choose_button, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):

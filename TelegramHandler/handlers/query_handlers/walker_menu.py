@@ -15,8 +15,8 @@ from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from ...keyboards.start_and_simple_button import choose_category_template, choose_catagory_text, \
-    choose_catagory_callback, error_in_send_file
+from ...keyboards.start_and_simple_button import choose_category_template, choose_category_text, \
+    choose_category_callback, error_in_send_file
 from ...keyboards.choose_file_keyboard import choose_file_kb, choose_file_kb_query
 from ....Tree import ClassTree
 
@@ -55,9 +55,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         await state.update_data(file_name_list=[])
         await update_user_info(state, path, 0, indx_list_end, False, child_list)
         print(indx_list_start, indx_list_end, child_list)
-        reply_markup = await choose_catagory_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, False, type_file)
-        text = await choose_catagory_text(child_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(child_list[indx_list_start:indx_list_end])
         await callback_query.message.edit_text(
             text=text,
             reply_markup=reply_markup
@@ -83,9 +83,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_catagory_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
-        text = await choose_catagory_text(child_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(child_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
             text=text,
@@ -113,9 +113,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await choose_catagory_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
-        text = await choose_catagory_text(child_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(child_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
             text=text,
@@ -144,9 +144,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         can_go_back = await check_back(path)
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_catagory_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
-        text = await choose_catagory_text(child_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(child_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
             text=text,
@@ -176,7 +176,7 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         if len(file_name_list) != 0:
             reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right)
-            text = await choose_catagory_text(file_name_list[indx_list_start:indx_list_end])
+            text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
             await from_button_to_file(state, files_list, file_name_list, WalkerState.choose_file)
             await choose_message_from_type_file_query(callback_query, state, reply_markup, text)
         else:
@@ -186,8 +186,8 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
             can_go_back = await check_back(path)
             type_file = user_info['type_file']
 
-            reply_markup = await choose_catagory_callback(child_list[indx_list_start:indx_list_end], can_go_left,
-                                                      can_go_right, can_go_back, type_file)
+            reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+                                                          can_go_right, can_go_back, type_file)
             try:
                 await callback_query.message.delete()
             except:
@@ -250,9 +250,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
 
-        reply_markup = await choose_catagory_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
                                                       can_go_right, can_go_back, type_file)
-        text = await choose_catagory_text(child_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(child_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
             text=text,

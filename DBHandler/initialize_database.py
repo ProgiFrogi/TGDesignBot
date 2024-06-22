@@ -5,8 +5,13 @@ from TGDesignBot.DBHandler.drop_scripts import drop_tables
 from TGDesignBot.DBHandler.insert_scripts import insert_many_users
 
 
-def initialize_database():
+def initialize_database() -> None:
     drop_tables()
     create_tables()
-    insert_many_users([[5592902615, 'admin']])
+    with open("./admins.txt", "r") as admins_file:
+        admins = [[int("".join(admin.split())), "admin"]
+                  for admin in admins_file.readlines()
+                  if len("".join(admin.split())) != 0]
+    if len(admins) != 0:
+        insert_many_users(admins)
     fill_database(get_all_files_in_disk())

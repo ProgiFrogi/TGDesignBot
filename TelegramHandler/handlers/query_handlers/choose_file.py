@@ -16,7 +16,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
-from ...keyboards import main_menu_kb, only_main_menu_button_kb, choose_catagory_callback, choose_catagory_text, \
+from ...keyboards import main_menu_kb, only_main_menu_button_kb, choose_category_callback, choose_category_text, \
     error_in_send_file, main_menu_kb_query, choose_tags_query
 from ...keyboards.choose_file_keyboard import choose_file_kb, download_file, work_with_tags, choose_file_kb_query, \
     download_file_query, work_with_tags_query
@@ -53,7 +53,7 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
                                                   can_go_right)
-        text = await choose_catagory_text(file_name_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
             text=text,
@@ -81,7 +81,7 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
                                                   can_go_right)
-        text = await choose_catagory_text(file_name_list[indx_list_start:indx_list_end])
+        text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
             text=text,
@@ -430,7 +430,7 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
             await update_user_indx(state, indx_list_start, indx_list_end)
 
             reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
-            text = await choose_catagory_text(list_tags[indx_list_start:indx_list_end])
+            text = await choose_category_text(list_tags[indx_list_start:indx_list_end])
             await callback_query.message.edit_text(
                 text="Введите ваши теги через ';' или Выберите их из предложенных ниже \n \n" + text,
                 reply_markup=reply_markup
