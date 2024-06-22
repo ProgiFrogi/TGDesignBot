@@ -1,5 +1,3 @@
-import pickle
-
 import requests
 import os
 
@@ -9,7 +7,7 @@ from TGDesignBot.YandexDisk.YaDiskInfo import TemplateInfo
 import aspose.slides as slides
 
 ya_disk = yadisk.YaDisk(token=str(os.getenv('YANDEX_DISK_TOKEN')))
-# ya_disk = pickle.load(open("YandexDisk/YaDisk.pkl", "rb"))
+
 
 class SlideInfo:
     def __init__(self, slide_idx: int, tags: str):

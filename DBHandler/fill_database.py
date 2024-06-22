@@ -1,8 +1,6 @@
 from TGDesignBot.DBHandler.insert_scripts import (insert_many_slides,
                                                   insert_many_fonts,
-                                                  insert_template,
-                                                  # insert_many_images
-                                                  )
+                                                  insert_template)
 from TGDesignBot.YandexDisk import YaDiskInfo
 from TGDesignBot.pptxHandler.pptxHandler import (install_templates,
                                                  get_slides_information)

@@ -25,17 +25,17 @@ from TGDesignBot.YandexDisk import get_download_link
 
 router = Router()
 
-dist_indx = 1
 
 class WalkerState(StatesGroup):
-    # В состоянии храним child_list, indx_list_start\end, can_go_back
+    # In the state we store child_list, indx_list_start\end, can_go_back
     choose_button = State()
     choose_category = State()
     choose_file = State()
     choose_tags = State()
 
+
 @router.callback_query(WalkerState.choose_file, F.data == "next")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -62,8 +62,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
+
 @router.callback_query(WalkerState.choose_file, F.data == "prev")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -89,6 +90,7 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         )
 
         await update_user_indx(state, indx_list_start, indx_list_end)
+
 
 @router.callback_query(WalkerState.choose_file, F.data == "get_fonts")
 @router.callback_query(WalkerState.choose_tags, F.data == "get_fonts")
@@ -125,6 +127,7 @@ async def get_fonts(callback_query: CallbackQuery, state: FSMContext):
     except:
         pass
 
+
 @router.callback_query(WalkerState.choose_file, F.data == "install_fonts_help")
 @router.callback_query(WalkerState.choose_tags, F.data == "install_fonts_help")
 async def send_info(callback_query: CallbackQuery):
@@ -144,6 +147,7 @@ async def send_info(callback_query: CallbackQuery):
         reply_markup=reply_markup
     )
 
+
 @router.callback_query(WalkerState.choose_tags, F.data == "next")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
@@ -161,16 +165,20 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         can_go_right = await check_right(indx_list_end, len(list_tags))
         can_go_left = await check_left(indx_list_start)
         text = await choose_tags_query(list_tags[indx_list_start:indx_list_end])
-        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end],
+                                                  can_go_left,
+                                                  can_go_right,
+                                                  state)
         await callback_query.message.edit_text(
             text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n" + text,
             reply_markup=reply_markup
         )
         await update_user_indx(state, indx_list_start, indx_list_end)
 
+
 @router.callback_query(WalkerState.choose_tags, F.data == "prev")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
@@ -186,7 +194,10 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         can_go_right = await check_right(indx_list_end, len(list_tags))
         can_go_left = await check_left(indx_list_start)
         text = await choose_tags_query(list_tags[indx_list_start:indx_list_end])
-        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end],
+                                                  can_go_left,
+                                                  can_go_right,
+                                                  state)
         await callback_query.message.edit_text(
             text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n" + text,
             reply_markup=reply_markup
@@ -209,7 +220,8 @@ async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
     can_go_right = await check_right(indx_list_end, len(list_tags))
     can_go_left = await check_left(indx_list_start)
 
-    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right,
+                                              state)
 
     text = f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n"
     text += await choose_tags_query(list_tags[indx_list_start:indx_list_end])
@@ -217,6 +229,7 @@ async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
         text=text,
         reply_markup=reply_markup
     )
+
 
 @router.callback_query(WalkerState.choose_tags, F.data == "find_with_tags")
 async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
@@ -234,7 +247,10 @@ async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
         can_go_right = await check_right(indx_list_end, len(list_tags))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+        reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end],
+                                                  can_go_left,
+                                                  can_go_right,
+                                                  state)
 
         try:
             await callback_query.message.answer(
@@ -301,12 +317,14 @@ async def choose_tags(message: Message, state: FSMContext):
     can_go_left = await check_left(indx_list_start)
     await state.update_data(user_tags=user_tags)
 
-    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right,
+                                              state)
     text = await choose_tags_query(list_tags[indx_list_start:indx_list_end])
     await message.answer(
         text=f"Введите ваши теги через ';' или Выберите их из предложенных ниже \n Ваши теги: {user_tags} \n" + text,
         reply_markup=reply_markup
     )
+
 
 @router.callback_query(WalkerState.choose_tags)
 async def choose_tags(callback_query: CallbackQuery, state: FSMContext):
@@ -321,7 +339,6 @@ async def choose_tags(callback_query: CallbackQuery, state: FSMContext):
 
     text = ""
 
-
     if tag not in user_tags:
         user_tags.append(list_tags[tag_index])
         text += f"Тег {tag} успешно добавлен! \n"
@@ -333,18 +350,20 @@ async def choose_tags(callback_query: CallbackQuery, state: FSMContext):
     can_go_left = await check_left(indx_list_start)
     await state.update_data(user_tags=user_tags)
 
-    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+    reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right,
+                                              state)
     text += await choose_tags_query(list_tags[indx_list_start:indx_list_end])
     await callback_query.message.edit_text(
         text=text,
         reply_markup=reply_markup
     )
 
+
 @router.callback_query(WalkerState.choose_file)
 async def choose_category(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         config = json.load(file)
-        dist_indx = config['dist']
+        dist_index = config['dist']
         user_info = await state.get_data()
         file_name_list = user_info['file_name_list']
         type_file = user_info['type_file']
@@ -352,7 +371,6 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
         indx_child = indx_list_start + int(callback_query.data) - 1
         file_name_list = user_info['file_name_list']
         file_name_from_list = file_name_list[indx_child]
-
 
         file_id = None
         link = None
@@ -421,7 +439,7 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
             await state.update_data(file_id=file_id)
 
             indx_list_start = 0
-            indx_list_end = indx_list_start + dist_indx
+            indx_list_end = indx_list_start + dist_index
             can_go_right = await check_right(indx_list_end, len(list_tags))
             can_go_left = await check_left(indx_list_start)
             await state.update_data(indx_list_start=indx_list_start)
@@ -429,7 +447,8 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
 
             await update_user_indx(state, indx_list_start, indx_list_end)
 
-            reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left, can_go_right, state)
+            reply_markup = await work_with_tags_query(list_tags[indx_list_start:indx_list_end], can_go_left,
+                                                      can_go_right, state)
             text = await choose_category_text(list_tags[indx_list_start:indx_list_end])
             await callback_query.message.edit_text(
                 text="Введите ваши теги через ';' или Выберите их из предложенных ниже \n \n" + text,

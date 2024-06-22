@@ -1,7 +1,7 @@
 import pickle
 
 # try:
-tree_obj = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+tree_obj = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
 # except:
 #     # tree = ClassTree.Tree()
 dist_indx = 9

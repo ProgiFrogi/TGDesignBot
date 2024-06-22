@@ -23,11 +23,9 @@ from TGDesignBot.YandexDisk import get_download_link
 
 router = Router()
 
-dist_indx = 1
-
 
 class WalkerState(StatesGroup):
-    # В состоянии храним child_list, indx_list_start\end, can_go_back
+    # In the state we store child_list, indx_list_start\end, can_go_back
     choose_button = State()
     choose_category = State()
     choose_file = State()
@@ -38,7 +36,7 @@ class WalkerState(StatesGroup):
 async def first_depth_template_find(message: Message, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
-        dist_indx = config['dist']
+        dist_index = config['dist']
 
         user_info = await state.get_data()
         indx_list_start = user_info['indx_list_start']
@@ -46,7 +44,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         file_name_list = user_info['file_name_list']
 
         indx_list_start = indx_list_end
-        indx_list_end = indx_list_end + dist_indx
+        indx_list_end = indx_list_end + dist_index
 
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)

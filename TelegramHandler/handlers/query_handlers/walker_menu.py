@@ -1,37 +1,39 @@
 import json
 import pickle
 
-from aiogram.filters import StateFilter
-
-from TGDesignBot.utility.tg_utility import can_go_right as check_right, from_button_to_file, set_file_type, \
-    choose_message_from_type_file, start_send_fonts, start_send_fonts_for_query, choose_message_from_type_file_query
+from TGDesignBot.utility.tg_utility import (can_go_right as check_right,
+                                            from_button_to_file,
+                                            set_file_type,
+                                            start_send_fonts_for_query,
+                                            choose_message_from_type_file_query)
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import can_go_back as check_back
 from TGDesignBot.utility.tg_utility import update_data as update_user_info
 from TGDesignBot.utility.tg_utility import update_indx as update_user_indx
 from TGDesignBot.utility.tg_utility import get_list_of_files as get_list_of_files
 from aiogram import F, Router
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup
+from aiogram.types import CallbackQuery
 
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from ...keyboards.start_and_simple_button import choose_category_template, choose_category_text, \
-    choose_category_callback, error_in_send_file
-from ...keyboards.choose_file_keyboard import choose_file_kb, choose_file_kb_query
-from ....Tree import ClassTree
+from ...keyboards.start_and_simple_button import (choose_category_text,
+                                                  choose_category_callback,
+                                                  error_in_send_file)
+from ...keyboards.choose_file_keyboard import choose_file_kb_query
 
 router = Router()
-users = [5592902615, 2114778573, 928962436, 986985057]
+
 
 class WalkerState(StatesGroup):
     choose_button = State()
     choose_category = State()
     choose_file = State()
 
+
 @router.callback_query(F.data == "pres_templates")
 @router.callback_query(F.data == "slides")
 @router.callback_query(F.data == "fonts")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         config = json.load(file)
@@ -55,8 +57,11 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         await state.update_data(file_name_list=[])
         await update_user_info(state, path, 0, indx_list_end, False, child_list)
         print(indx_list_start, indx_list_end, child_list)
-        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
-                                                      can_go_right, False, type_file)
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end],
+                                                      can_go_left,
+                                                      can_go_right,
+                                                      False,
+                                                      type_file)
         text = await choose_category_text(child_list[indx_list_start:indx_list_end])
         await callback_query.message.edit_text(
             text=text,
@@ -65,9 +70,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
 
 @router.callback_query(WalkerState.choose_button, F.data == "next")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
@@ -83,8 +88,11 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
-                                                      can_go_right, can_go_back, type_file)
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end],
+                                                      can_go_left,
+                                                      can_go_right,
+                                                      can_go_back,
+                                                      type_file)
         text = await choose_category_text(child_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
@@ -94,10 +102,11 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
+
 @router.callback_query(WalkerState.choose_button, F.data == "prev")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
         user_info = await state.get_data()
@@ -113,8 +122,11 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
-                                                      can_go_right, can_go_back, type_file)
+        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end],
+                                                      can_go_left,
+                                                      can_go_right,
+                                                      can_go_back,
+                                                      type_file)
         text = await choose_category_text(child_list[indx_list_start:indx_list_end])
 
         await callback_query.message.edit_text(
@@ -124,10 +136,11 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
+
 @router.callback_query(WalkerState.choose_button, F.data == "prev_dir")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
         user_info = await state.get_data()
@@ -154,8 +167,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         )
         await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
 
+
 @router.callback_query(WalkerState.choose_button, F.data == "show_all_pres")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     with open("config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -174,7 +188,8 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)
         if len(file_name_list) != 0:
-            reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
+            reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end],
+                                                      can_go_left,
                                                       can_go_right)
             text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
             await from_button_to_file(state, files_list, file_name_list, WalkerState.choose_file)
@@ -186,8 +201,11 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
             can_go_back = await check_back(path)
             type_file = user_info['type_file']
 
-            reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
-                                                          can_go_right, can_go_back, type_file)
+            reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end],
+                                                          can_go_left,
+                                                          can_go_right,
+                                                          can_go_back,
+                                                          type_file)
             try:
                 await callback_query.message.delete()
             except:
@@ -200,7 +218,7 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
 
 
 @router.callback_query(WalkerState.choose_button, F.data == "get_fonts_from_all_pres")
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     user_info = await state.get_data()
     path = '/'.join(user_info['path'][1:])
     try:
@@ -223,8 +241,9 @@ async def first_depth_template_find(callback_query : CallbackQuery, state: FSMCo
     except:
         print('Proxy error')
 
+
 @router.callback_query(WalkerState.choose_button)
-async def first_depth_template_find(callback_query : CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
     with open("config.json", "r") as file:
         user_info = await state.get_data()

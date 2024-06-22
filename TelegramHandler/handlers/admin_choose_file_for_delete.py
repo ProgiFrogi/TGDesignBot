@@ -1,21 +1,20 @@
 import json
 
-from TGDesignBot.utility.tg_utility import can_go_right as check_right, download_with_link
+from TGDesignBot.utility.tg_utility import can_go_right as check_right
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import update_indx as update_user_indx
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
-from ..keyboards.choose_file_keyboard import choose_file_kb, download_file, work_with_tags
-from ...DBHandler import get_all_tags_by_template_id
-from ...YandexDisk import get_download_link
+from ..keyboards.choose_file_keyboard import choose_file_kb
 from ...YandexDisk.YaDiskHandler import delete_from_disk
 
 router = Router()
 
+
 class AdminState(StatesGroup):
-    # В состоянии храним child_list, indx_list_start\end, can_go_back
+    # In the state we store child_list, indx_list_start\end, can_go_back
     choose_button = State()
     choose_category = State()
     choose_file = State()
@@ -35,7 +34,9 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end], message, can_go_left,
+        reply_markup = await choose_file_kb(file_name_list[indx_list_start:indx_list_end],
+                                            message,
+                                            can_go_left,
                                             can_go_right)
         await message.answer(
             text="Выберите один из файлов",
@@ -43,6 +44,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         )
 
         await update_user_indx(state, indx_list_start, indx_list_end)
+
 
 @router.message(AdminState.choose_file, F.text.lower() == "назад")
 async def first_depth_template_find(message: Message, state: FSMContext):
@@ -69,9 +71,9 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
         await update_user_indx(state, indx_list_start, indx_list_end)
 
+
 @router.message(AdminState.choose_file)
 async def choose_category(message: Message, state: FSMContext):
-    global tree
     with open("config.json", "r") as file:
         user_info = await state.get_data()
         file_name_list = user_info['file_name_list']

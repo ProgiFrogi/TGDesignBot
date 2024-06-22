@@ -1,5 +1,5 @@
 import psycopg2
-from Repo.TGDesignBot.main.DBHandler.config import load_config
+from TGDesignBot.DBHandler.config import load_config
 
 
 def connect(config):

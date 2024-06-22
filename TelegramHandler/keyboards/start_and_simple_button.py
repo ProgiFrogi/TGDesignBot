@@ -6,8 +6,6 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from TGDesignBot.DBHandler.select_scripts import is_user_admin
 
-# admins = [5592902615, 2114778573, 928962436, 197284014]
-
 
 # Starting menu.
 def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
@@ -22,13 +20,13 @@ def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     return kb.as_markup(resize_keyboard=True)
 
 
-def only_main_menu_button_kb(message: Message):
+def only_main_menu_button_kb():
     kb = ReplyKeyboardBuilder()
     kb.button(text="В главное меню")
     return kb.as_markup(resize_keyboard=True)
 
 
-def main_menu_kb(message: Message):
+def main_menu_kb():
     kb = ReplyKeyboardBuilder()
     kb.button(text="Как установить шрифты?")
     kb.button(text="В главное меню")
@@ -55,7 +53,7 @@ def main_menu_kb_query():
 
 
 # Buttons with choosing categories.
-def choose_category_kb(message: Message) -> ReplyKeyboardMarkup:
+def choose_category_kb() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Шаблон презентаций")
     kb.button(text="Готовые слайды о компании")
@@ -197,7 +195,7 @@ async def choose_category_template(key_list: list, can_go_left: bool, can_go_rig
     return kb.as_markup(resize_keyboard=True)
 
 
-async def admin_choose_category_template(key_list: list, message: Message, can_go_left: bool, can_go_right: bool,
+async def admin_choose_category_template(key_list: list, can_go_left: bool, can_go_right: bool,
                                          can_go_back: bool, action: str) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     for elem in key_list:

@@ -1,8 +1,9 @@
 import json
 import os
 import pickle
-from TGDesignBot.utility.tg_utility import can_go_right as check_right, get_list_of_files, \
-    from_button_to_file, admin_from_chose_dir_to_choose_file
+from TGDesignBot.utility.tg_utility import (can_go_right as check_right,
+                                            get_list_of_files,
+                                            admin_from_chose_dir_to_choose_file)
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import can_go_back as check_back
 from TGDesignBot.utility.tg_utility import update_data as update_user_info
@@ -15,30 +16,21 @@ import aiogram.exceptions as tg_exceptions
 from ..keyboards import choose_file_kb
 from ..keyboards.start_and_simple_button import admin_panel
 from aiogram.fsm.state import StatesGroup, State
-from ..keyboards.start_and_simple_button import choose_category_kb, admin_choose_category_template
+from ..keyboards.start_and_simple_button import admin_choose_category_template
 from aiogram import Bot, F, Router
-from aiogram.filters import Command
 from aiogram.types import Message
 
 router = Router()
 
-# Listing all admins
-admins = [5592902615, 2114778573]
-# try:
-
-# YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
-# except:
-#     tree = Tree()
-#     YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
 
 class AdminState(StatesGroup):
-    # В состоянии храним child_list, indx_list_start\end, can_go_back, действие
+    # In the state we store child_list, indx_list_start\end, can_go_back and action.
     choose_button = State()
     choose_file = State()
 
 
 @router.message(F.text.lower() == "админ-панель",
-                lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
+                lambda message: is_user_admin(message.from_user.id))
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
@@ -49,7 +41,7 @@ async def admin_menu(message: Message, state: FSMContext):
 
 # If user in root
 @router.message(F.text.lower() == "добавить материал",
-                lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
+                lambda message: is_user_admin(message.from_user.id))
 async def first_depth_template_find(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -76,8 +68,11 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         user_info = await state.get_data()
         action = user_info['state_action']
         await state.update_data()
-        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
-                                                      can_go_right, False, action)
+        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end],
+                                                            can_go_left,
+                                                            can_go_right,
+                                                            False,
+                                                            action)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
@@ -85,7 +80,7 @@ async def first_depth_template_find(message: Message, state: FSMContext):
 
 
 @router.message(F.text.lower() == "удалить материал",
-                lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
+                lambda message: is_user_admin(message.from_user.id))
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -112,8 +107,11 @@ async def admin_menu(message: Message, state: FSMContext):
         user_info = await state.get_data()
         action = user_info['state_action']
         await state.update_data()
-        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
-                                                      can_go_right, False, action)
+        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end],
+                                                            can_go_left,
+                                                            can_go_right,
+                                                            False,
+                                                            action)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
@@ -139,8 +137,11 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_left = await check_left(indx_list_start)
         user_info = await state.get_data()
         action = user_info['state_action']
-        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
-                                                      can_go_right, can_go_back, action)
+        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end],
+                                                            can_go_left,
+                                                            can_go_right,
+                                                            can_go_back,
+                                                            action)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
@@ -166,8 +167,11 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_left = await check_left(indx_list_start)
         user_info = await state.get_data()
         action = user_info['state_action']
-        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
-                                                            can_go_right, False, action)
+        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end],
+                                                            can_go_left,
+                                                            can_go_right,
+                                                            False,
+                                                            action)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
@@ -196,29 +200,34 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_left = await check_left(indx_list_start)
         user_info = await state.get_data()
         action = user_info['state_action']
-        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
-                                                            can_go_right, False, action)
+        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end],
+                                                            can_go_left,
+                                                            can_go_right,
+                                                            False,
+                                                            action)
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup
         )
         await update_user_info(state, user_data, indx_list_start, indx_list_end, can_go_back, child_list)
 
+
 @router.message(F.text.lower() == "добавить сюда", AdminState.choose_button)
-async def download(message: Message, state: FSMContext):
+async def download(message: Message):
     await message.answer(
         text="Скиньте ваш файл в чат",
     )
 
+
 @router.message(F.text.lower() == "добавить сюда")
-async def download(message: Message, state: FSMContext):
+async def download(message: Message):
     await message.answer(
         text="Скиньте ваш файл в чат",
     )
 
 
 @router.message(F.document, AdminState.choose_button)
-async def download_file(message : Message, bot : Bot, state: FSMContext):
+async def download_file(message: Message, bot: Bot, state: FSMContext):
     user_info = await state.get_data()
     ydisk_path = user_info['path'][1:]
     file_id = message.document.file_id
@@ -278,10 +287,11 @@ async def output_files(message: Message, state: FSMContext):
             reply_markup=reply_markup
         )
 
+
 @router.message(AdminState.choose_button)
 async def first_depth_template_find(message: Message, state: FSMContext):
-    with open("config.json", "r") as file:
-        tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
+        tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
         config = json.load(file)
         dist_indx = config['dist']
         user_info = await state.get_data()
@@ -302,8 +312,11 @@ async def first_depth_template_find(message: Message, state: FSMContext):
         can_go_back = await check_back(user_data)
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end], message, can_go_left,
-                                                            can_go_right, can_go_back, user_info['state_action'])
+        reply_markup = await admin_choose_category_template(child_list[indx_list_start:indx_list_end],
+                                                            can_go_left,
+                                                            can_go_right,
+                                                            can_go_back,
+                                                            user_info['state_action'])
         await message.answer(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы",
             reply_markup=reply_markup

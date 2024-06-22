@@ -12,36 +12,24 @@ from TGDesignBot.YandexDisk.YaDiskHandler import upload_to_disk
 from aiogram.fsm.context import FSMContext
 import aiogram.exceptions as tg_exceptions
 
-from ...keyboards import choose_file_kb, choose_file_kb_query
-from ...keyboards.start_and_simple_button import admin_panel, admin_panel_query, admin_choose_category_template_query, \
+from ...keyboards import choose_file_kb_query
+from ...keyboards.start_and_simple_button import admin_panel_query, admin_choose_category_template_query, \
     choose_tags_query, admin_add_here
 from aiogram.fsm.state import StatesGroup, State
-from ...keyboards.start_and_simple_button import choose_category_kb, admin_choose_category_template
 from aiogram import Bot, F, Router
-from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
 router = Router()
 
-# Listing all admins
-admins = [5592902615, 2114778573]
-
-
-# try:
-
-# YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
-# except:
-#     tree = Tree()
-#     YaDiskHandler.update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
 
 class AdminState(StatesGroup):
-    # В состоянии храним child_list, indx_list_start\end, can_go_back, действие
+    # In the state we store child_list, indx_list_start\end, can_go_back, and action.
     choose_button = State()
     choose_file = State()
 
 
 @router.message(F.text.lower() == "админ-панель",
-                lambda message: is_user_admin(message.from_user.id) or message.from_user.id in admins)
+                lambda message: is_user_admin(message.from_user.id))
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
@@ -53,7 +41,7 @@ async def admin_menu(message: Message, state: FSMContext):
 # If user in root
 @router.callback_query(F.data == "admin_add",
                        lambda callback_query: is_user_admin(
-                           callback_query.from_user.id) or callback_query.from_user.id in admins)
+                           callback_query.from_user.id))
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -79,7 +67,9 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         text = await choose_tags_query(child_list[indx_list_start:indx_list_end])
         reply_markup = await admin_choose_category_template_query(child_list[indx_list_start:indx_list_end],
                                                                   can_go_left,
-                                                                  can_go_right, False, action)
+                                                                  can_go_right,
+                                                                  False,
+                                                                  action)
         await callback_query.message.edit_text(
             text="Выберите одну из папок, или скиньте ваш файл \n\n" + text,
             reply_markup=reply_markup
@@ -87,8 +77,7 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
 
 @router.callback_query(F.data == "admin_delete",
-                       lambda callback_query: is_user_admin(
-                           callback_query.from_user.id) or callback_query.from_user.id in admins)
+                       lambda callback_query: is_user_admin(callback_query.from_user.id))
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -142,7 +131,9 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         action = user_info['state_action']
         reply_markup = await admin_choose_category_template_query(child_list[indx_list_start:indx_list_end],
                                                                   can_go_left,
-                                                                  can_go_right, can_go_back, action)
+                                                                  can_go_right,
+                                                                  can_go_back,
+                                                                  action)
         text = await choose_tags_query(child_list[indx_list_start:indx_list_end])
         await callback_query.message.edit_text(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы \n\n" + text,
@@ -171,7 +162,9 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         action = user_info['state_action']
         reply_markup = await admin_choose_category_template_query(child_list[indx_list_start:indx_list_end],
                                                                   can_go_left,
-                                                                  can_go_right, can_go_back, action)
+                                                                  can_go_right,
+                                                                  can_go_back,
+                                                                  action)
         text = await choose_tags_query(child_list[indx_list_start:indx_list_end])
         await callback_query.message.edit_text(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы \n\n" + text,
@@ -213,10 +206,10 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
 
 @router.callback_query(AdminState.choose_button, F.data == "add_here")
-async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
+async def first_depth_template_find(callback_query: CallbackQuery):
     reply_markup = admin_add_here()
     await callback_query.message.edit_text(
-        text="Скиньте ваш файл в чат",
+        text="Отправьте ваш файл в чат",
         reply_markup=reply_markup
     )
 
@@ -238,7 +231,9 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         action = user_info['state_action']
         reply_markup = await admin_choose_category_template_query(child_list[indx_list_start:indx_list_end],
                                                                   can_go_left,
-                                                                  can_go_right, can_go_back, action)
+                                                                  can_go_right,
+                                                                  can_go_back,
+                                                                  action)
         text = await choose_tags_query(child_list[indx_list_start:indx_list_end])
         await callback_query.message.edit_text(
             text="Выберите одну из папок, или выведите все вложенные в эти папки файлы \n\n" + text,
@@ -284,7 +279,7 @@ async def download_file(message: Message, bot: Bot, state: FSMContext):
 
 @router.callback_query(AdminState.choose_button, F.data == "show_all_pres_for_delete")
 async def output_files(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
         user_info = await state.get_data()
@@ -313,8 +308,8 @@ async def output_files(callback_query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(AdminState.choose_button)
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         user_info = await state.get_data()
         child_list = user_info['child_list']
         indx_list_start = user_info['indx_list_start']
