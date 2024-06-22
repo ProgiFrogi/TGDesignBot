@@ -5,9 +5,9 @@ from TGDesignBot.utility.tg_utility import can_go_right as check_right, download
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import update_indx as update_user_indx
 from TGDesignBot.DBHandler import (get_fonts_by_template_id,
-                                             get_all_tags_by_template_id,
-                                             get_slides_by_tags_and_template_id,
-                                             get_templates_by_index)
+                                   get_all_tags_by_template_id,
+                                   get_slides_by_tags_and_template_id,
+                                   get_templates_by_index, delete_template, get_template_id_by_name)
 from TGDesignBot.YandexDisk.YaDiskInfo import TemplateInfo
 from aiogram import types
 
@@ -226,7 +226,7 @@ async def clear_tags(callback_query: CallbackQuery, state: FSMContext):
 
     slides_list = get_slides_by_tags_and_template_id(user_tags, template_id)
     # No need slides
-    if (len(slides_list) == 0):
+    if len(slides_list) == 0:
         indx_list_start = user_info['indx_list_start']
         indx_list_end = user_info['indx_list_end']
         list_tags = user_info['list_tags']
@@ -372,8 +372,19 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
                 await state.update_data(file_name=file_name)
                 break
 
-        if (type_file == 'template'):
-            link = get_download_link(str(file_path) + '/' + str(file_name))
+        if type_file == 'template':
+
+            try:
+                link = get_download_link(str(file_path) + '/' + str(file_name))
+            except Exception:
+                await callback_query.message.edit_text(
+                    text="Не удалось найти данный файл, возможно он был перемещён или удалён."
+                )
+                template_info = TemplateInfo(str(file_name), str(file_path))
+                template_id = get_template_id_by_name(template_info.path, template_info.name)
+                delete_template(template_id)
+                return
+
             await callback_query.message.edit_text(
                 text="Ваш файл загружается..."
             )
@@ -396,7 +407,7 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
                     reply_markup=reply_markup
                 )
 
-        if (type_file == 'slide'):
+        if type_file == 'slide':
             await state.clear()
             await state.set_state(WalkerState.choose_tags)
 
@@ -424,15 +435,21 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
                 text="Введите ваши теги через ';' или Выберите их из предложенных ниже \n \n" + text,
                 reply_markup=reply_markup
             )
-        if (type_file == 'font'):
+        if type_file == 'font':
             font_name = get_fonts_by_template_id(file_id)
-            if (len(font_name) == 0):
+            if len(font_name) == 0:
                 reply_markup = await error_in_send_file()
                 await callback_query.message.edit_text(
                     text="Для данной презентации нет шрифтов!",
                     reply_markup=reply_markup
                 )
-            link = get_download_link(file_path + '/' + font_name[0][3])
+            try:
+                link = get_download_link(file_path + '/' + font_name[0][3])
+            except Exception:
+                await callback_query.message.edit_text(
+                    text="Не удалось найти данный файл, возможно он был перемещён или удалён."
+                )
+                return
             reply_markup = download_file_query()
             try:
                 await callback_query.message.edit_text(
@@ -451,4 +468,3 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
                 )
             except:
                 print('Font send error')
-

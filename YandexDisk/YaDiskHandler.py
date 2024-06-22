@@ -112,17 +112,17 @@ def update_tree(tree: Tree, last_updated_time):
     check_token(ya_disk)
     __delete_nodes__('/', tree)
     __add_nodes__('/', last_updated_time, tree)
-    with open("Tree/ObjectTree.pkl", "wb") as fp:
+    with open("./Tree/ObjectTree.pkl", "wb") as fp:
         pickle.dump(tree, fp)
 
     # Updating last_updated_time in json.
     last_updated_time = datetime.datetime.now(tz=datetime.timezone.utc)
-    with open("config.json", "r") as jsonFile:
+    with open("./config.json", "r") as jsonFile:
         data = json.load(jsonFile)
 
     data["last-update-time"] = last_updated_time.isoformat()
 
-    with open("config.json", "w") as jsonFile:
+    with open("./config.json", "w") as jsonFile:
         json.dump(data, jsonFile)
 
 

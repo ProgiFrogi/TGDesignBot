@@ -20,6 +20,7 @@ async def choose_file_kb(key_list: list, message: Message, can_go_left: bool,
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
+
 async def choose_file_kb_query(key_list: list, can_go_left: bool, can_go_right: bool) -> InlineKeyboardMarkup:
     nums_for_choose = [
         InlineKeyboardButton(
@@ -65,11 +66,13 @@ async def choose_file_kb_query(key_list: list, can_go_left: bool, can_go_right: 
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+
 def download_file() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Получить шрифты")
     kb.button(text="В главное меню")
     return kb.as_markup(resize_keyboard=True)
+
 
 def download_file_query() -> InlineKeyboardMarkup:
     rows = [
@@ -89,6 +92,7 @@ def download_file_query() -> InlineKeyboardMarkup:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
+
 
 def back_in_last_state() -> InlineKeyboardMarkup:
     rows = [
@@ -113,20 +117,21 @@ async def work_with_tags(key_list: list, can_go_left: bool,
     for elem in key_list:
         kb.add(types.KeyboardButton(text=elem))
     kb.adjust(3)
-    if (can_go_right):
+    if can_go_right:
         kb.button(text="Далее")
-    if (can_go_left):
+    if can_go_left:
         kb.button(text="Назад")
     kb.adjust(2)
-    if (len(user_tags) > 0):
+    if len(user_tags) > 0:
         kb.button(text="Очистить теги")
     kb.button(text="Найти слайды по введеным тегам")
     kb.button(text="В главное меню")
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-async def work_with_tags_query(key_list : list, can_go_left : bool,
-                               can_go_right : bool, state : FSMContext) -> InlineKeyboardMarkup:
+
+async def work_with_tags_query(key_list: list, can_go_left: bool,
+                               can_go_right: bool, state: FSMContext) -> InlineKeyboardMarkup:
     user_info = await state.get_data()
     user_tags = user_info['user_tags']
     nums_for_choose = [
@@ -150,21 +155,21 @@ async def work_with_tags_query(key_list : list, can_go_left : bool,
             )
         ])
 
-    elif (can_go_right):
+    elif can_go_right:
         rows.append([
             InlineKeyboardButton(
                 text='Далее➡',
                 callback_data='next'
             )
         ])
-    elif (can_go_left):
+    elif can_go_left:
         rows.append([
             InlineKeyboardButton(
                 text='⬅Назад',
                 callback_data='prev'
             )
         ])
-    if (len(user_tags) > 0):
+    if len(user_tags) > 0:
         rows.append([
             InlineKeyboardButton(
                 text="Очистить теги",

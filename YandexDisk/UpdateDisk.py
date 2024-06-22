@@ -25,11 +25,10 @@ def update_db(last_updated_time: datetime.datetime):
 
 # Update actuality of database and tree.
 def update_tree_and_db():
-    with open("Tree/ObjectTree.pkl", "rb") as tree_file:
+    with open("./Tree/ObjectTree.pkl", "rb") as tree_file:
         tree = pickle.load(tree_file)
 
     last_updated_time = datetime.datetime.fromisoformat(json.load(open("config.json"))["last-update-time"])
     time_copy = copy.deepcopy(last_updated_time)
     update_tree(tree, last_updated_time)
     update_db(time_copy)
-    print("Updated tree ", datetime.datetime.now().isoformat())
