@@ -1,10 +1,7 @@
 import asyncio
-import json
-import os
 import datetime
 import pickle
 
-import yadisk
 from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
 
@@ -20,7 +17,7 @@ async def main():
     load_dotenv()
     tree = Tree()
     update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
-    with open("Tree/ObjectTree.pkl", "wb") as fp:
+    with open("./Tree/ObjectTree.pkl", "wb") as fp:
         pickle.dump(tree, fp)
     # Initialize DataBase.
     initialize_database()
