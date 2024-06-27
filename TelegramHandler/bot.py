@@ -8,16 +8,14 @@ from aiogram.types import BotCommand
 
 from TGDesignBot.TelegramHandler.handlers import (simple_func_handler,
                                                   main_menu_handler,
-                                                  admin_menu_handler,
-                                                  choose_file,
-                                                  admin_choose_file_for_delete,
                                                   no_handled)
-from TGDesignBot.TelegramHandler.handlers import walker_menu
 from TGDesignBot.TelegramHandler.handlers.query_handlers import walker_menu as q_walker_menu
 from TGDesignBot.TelegramHandler.handlers.query_handlers import choose_file as q_choose_file
 from TGDesignBot.TelegramHandler.handlers.query_handlers import admin_menu_handler as q_admin_menu_handler
 from TGDesignBot.TelegramHandler.handlers.query_handlers import \
     admin_choose_file_for_delete as q_admin_choose_file_for_delete
+from TGDesignBot.TelegramHandler.handlers.query_handlers import admin_add as q_admin_add
+from TGDesignBot.TelegramHandler.handlers.query_handlers import admin_delete as q_admin_delete
 
 
 async def setup_bot_commands(bot: Bot):
@@ -35,17 +33,17 @@ async def main():
     bot = Bot(token=os.getenv('BOT_TOKEN'))
     dp = Dispatcher(storage=MemoryStorage())
     # Include router
-    dp.include_router(main_menu_handler.router)
-    dp.include_router(q_admin_menu_handler.router)
-    dp.include_router(q_admin_choose_file_for_delete.router)
-    dp.include_router(q_walker_menu.router)
-    dp.include_router(q_choose_file.router)
-    dp.include_router(simple_func_handler.router)
-    dp.include_router(admin_menu_handler.router)
-    dp.include_router(admin_choose_file_for_delete.router)
-    dp.include_router(choose_file.router)
-    dp.include_router(walker_menu.router)
-    dp.include_router(no_handled.router)
+    dp.include_routers(
+        main_menu_handler.router,
+        q_admin_menu_handler.router,
+        q_admin_add.router,
+        q_admin_delete.router,
+        q_admin_choose_file_for_delete.router,
+        q_walker_menu.router,
+        q_choose_file.router,
+        simple_func_handler.router,
+        no_handled.router
+    )
     # Start bot
     await setup_bot_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)

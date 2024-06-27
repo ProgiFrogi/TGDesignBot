@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from ..keyboards.start_and_simple_button import start_menu_kb, choose_category_kb
+from ..keyboards.start_and_simple_button import start_menu_kb, choose_category_kb, start_menu_kb_query
 from ..keyboards.InlineKeyboards.searchKB import build_choose_kb
 
 router = Router()
@@ -51,9 +51,18 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
+@router.callback_query(F.data == 'main_menu')
+async def cmd_cancel_handler(callback_query: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback_query.bot.send_message(
+        chat_id=callback_query.message.chat.id,
+        text="Вы в главном меню",
+        reply_markup=start_menu_kb_query(callback_query)
+    )
+
 
 @router.message(StateFilter(None), Command(commands=["choose_category"]), lambda message: message.from_user.id in users)
-@router.message(F.text.lower() == "готовлю презентацию сам, нужны материалы")
+@router.message(F.text.lower() == "поиск материалов")
 @router.message(Command("cat", prefix="!/"))
 async def choose_category_handler(message: Message, state: FSMContext):
     reply_markup = await build_choose_kb()
@@ -66,6 +75,15 @@ async def choose_category_handler(message: Message, state: FSMContext):
 
 @router.message(StateFilter(None), Command(commands=["choose_category"]), lambda message: message.from_user.id in users)
 @router.message(Command("cat", prefix="!/"))
+@router.callback_query(F.data == "menu_choose")
+async def choose_category_handler(callback_query: CallbackQuery, state: FSMContext):
+    reply_markup = await build_choose_kb()
+    await callback_query.message.edit_text(
+        text="Что вас интересует?",
+        reply_markup=reply_markup
+    )
+    await state.set_state(UserStates.in_choose_category)
+
 @router.callback_query(F.data == "menu_choose")
 async def choose_category_handler(callback_query: CallbackQuery, state: FSMContext):
     reply_markup = await build_choose_kb()

@@ -70,7 +70,7 @@ async def get_list_of_files(state: FSMContext) -> list:
     return list_of_files
 
 
-async def from_button_to_file(state: FSMContext, files_list: list, file_name_list: list, to_state) -> None:
+async def from_button_to_file(state: FSMContext, files_list: list, file_name_list: list, to_state, paths_list : list) -> None:
     global dist_indx
     user_info = await state.get_data()
     path = user_info['path']
@@ -86,6 +86,7 @@ async def from_button_to_file(state: FSMContext, files_list: list, file_name_lis
     await state.update_data(files_list=files_list)
     await state.update_data(file_name_list=file_name_list)
     await state.update_data(type_file=type_file)
+    await state.update_data(paths_list=paths_list)
 
 
 async def admin_from_chose_dir_to_choose_file(state: FSMContext, files_list: list, file_name_list: list,
@@ -319,10 +320,13 @@ def merge_fonts(input_folder, output_zip):
                                 if font_file not in unique_files:
                                     unique_files.add(font_file)
                                     try:
+                                        print(font_file)
                                         file_data = zip_ref.read(font_file)
-                                        print(os.path.basename(font_file))
                                         output_zip_file.writestr(
-                                            os.path.basename(font_file),
+                                            os.path.join(
+                                                dir_name,
+                                                os.path.basename(font_file)
+                                            ),
                                             file_data,
                                             compress_type=zipfile.ZIP_DEFLATED,
                                         )
@@ -352,11 +356,11 @@ async def choose_message_from_type_file_query(callback_query: CallbackQuery, sta
 
     if type_file in ['template', 'slide']:
         await callback_query.message.edit_text(
-            text="Выберите один из файлов \n" + text,
+            text="Выберите один из файлов \n \n" + text,
             reply_markup=reply_markup
         )
     elif type_file == 'font':
         await callback_query.message.edit_text(
-            text="Выберите презентацию из которой хотите получить ширфты \n" + text,
+            text="Выберите презентацию из которой хотите получить ширфты \n \n" + text,
             reply_markup=reply_markup
         )

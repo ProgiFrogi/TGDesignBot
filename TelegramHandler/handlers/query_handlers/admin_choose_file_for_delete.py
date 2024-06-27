@@ -28,7 +28,6 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
     with open("config.json", "r") as file:
         dist_indx = json.load(file)['dist']
         user_info = await state.get_data()
-        indx_list_start = user_info['indx_list_start']
         indx_list_end = user_info['indx_list_end']
         file_name_list = user_info['file_name_list']
 
@@ -102,20 +101,19 @@ async def choose_category(callback_query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(AdminState.choose_file)
 async def choose_category(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
-        user_info = await state.get_data()
-        key = randint(100, 999)
-        indx_list_start = user_info['indx_list_start']
-        file_name_list = user_info['file_name_list']
-        indx_delete_file = indx_list_start + int(callback_query.data) - 1
-        await state.update_data(key=str(key))
-        await state.update_data(file_for_delete=file_name_list[indx_delete_file])
+    user_info = await state.get_data()
+    key = randint(100, 999)
+    indx_list_start = user_info['indx_list_start']
+    file_name_list = user_info['file_name_list']
+    indx_delete_file = indx_list_start + int(callback_query.data) - 1
+    await state.update_data(key=str(key))
+    await state.update_data(file_for_delete=file_name_list[indx_delete_file])
 
-        reply_markup = back_in_last_state()
-        await callback_query.message.edit_text(
-            text=f"Подтвердите удаление кода {key} в чат, или отмените действие",
-            reply_markup=reply_markup
-        )
+    reply_markup = back_in_last_state()
+    await callback_query.message.edit_text(
+        text=f"Подтвердите удаление кодом {key} в чат, или отмените действие",
+        reply_markup=reply_markup
+    )
 
 
 @router.message(AdminState.choose_file)

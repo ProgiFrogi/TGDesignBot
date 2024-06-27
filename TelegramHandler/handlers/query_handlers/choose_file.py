@@ -1,7 +1,7 @@
 import json
 
-from TGDesignBot.utility.tg_utility import can_go_right as check_right, download_with_link, \
-    send_file_from_local, download_with_link_query, send_file_from_local_for_query
+from TGDesignBot.utility.tg_utility import can_go_right as check_right, \
+    download_with_link_query, send_file_from_local_for_query
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import update_indx as update_user_indx
 from TGDesignBot.DBHandler import (get_fonts_by_template_id,
@@ -9,17 +9,15 @@ from TGDesignBot.DBHandler import (get_fonts_by_template_id,
                                    get_slides_by_tags_and_template_id,
                                    get_templates_by_index, delete_template, get_template_id_by_name)
 from TGDesignBot.YandexDisk.YaDiskInfo import TemplateInfo
-from aiogram import types
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
-from ...keyboards import main_menu_kb, only_main_menu_button_kb, choose_category_callback, choose_category_text, \
-    error_in_send_file, main_menu_kb_query, choose_tags_query
-from ...keyboards.choose_file_keyboard import choose_file_kb, download_file, work_with_tags, choose_file_kb_query, \
-    download_file_query, work_with_tags_query
+from ...keyboards import choose_category_text, error_in_send_file, main_menu_kb_query, choose_tags_query, \
+    choose_one_file
+from ...keyboards.choose_file_keyboard import choose_file_kb_query, download_file_query, work_with_tags_query
 from TGDesignBot.pptxHandler import get_template_of_slides, SlideInfo, remove_template
 from TGDesignBot.YandexDisk import get_download_link
 
@@ -41,9 +39,9 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         dist_indx = config['dist']
 
         user_info = await state.get_data()
-        indx_list_start = user_info['indx_list_start']
         indx_list_end = user_info['indx_list_end']
         file_name_list = user_info['file_name_list']
+        paths_list = user_info['paths_list']
 
         indx_list_start = indx_list_end
         indx_list_end = indx_list_end + dist_indx
@@ -53,7 +51,10 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
         reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
                                                   can_go_right)
-        text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
+        text = await choose_one_file(
+            file_name_list[indx_list_start:indx_list_end],
+            paths_list[indx_list_start:indx_list_end]
+        )
 
         await callback_query.message.edit_text(
             text=text,
@@ -73,6 +74,7 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         indx_list_start = user_info['indx_list_start']
         indx_list_end = user_info['indx_list_end']
         file_name_list = user_info['file_name_list']
+        paths_list = user_info['paths_list']
 
         indx_list_start -= dist_indx
         indx_list_end -= dist_indx
@@ -82,7 +84,10 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
         reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
                                                   can_go_right)
-        text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
+        text = await choose_one_file(
+            file_name_list[indx_list_start:indx_list_end],
+            paths_list[indx_list_start:indx_list_end]
+        )
 
         await callback_query.message.edit_text(
             text=text,

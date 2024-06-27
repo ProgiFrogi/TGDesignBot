@@ -1,21 +1,32 @@
 from aiogram import Bot, Dispatcher, types, F
-from aiogram.types import ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, CallbackQuery
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from TGDesignBot.DBHandler.select_scripts import is_user_admin
+from TGDesignBot.utility.checkers import is_admin_with_json
 
 
 # Starting menu.
 def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
-    kb.button(text="Готовлю презентацию сам, нужны материалы")
+    kb.button(text="Поиск материалов")
 
     kb.button(text="Стоп, а что ты умеешь?")
     kb.button(text="Хочу дать обратную связь")
     kb.adjust(1)
-    if is_user_admin(message.from_user.id):
+    if is_admin_with_json(message.from_user.id):
+        kb.button(text="Админ-панель")
+    return kb.as_markup(resize_keyboard=True)
+
+def start_menu_kb_query(callback_query: CallbackQuery) -> ReplyKeyboardMarkup:
+    kb = ReplyKeyboardBuilder()
+    kb.button(text="Поиск материалов")
+
+    kb.button(text="Стоп, а что ты умеешь?")
+    kb.button(text="Хочу дать обратную связь")
+    kb.adjust(1)
+    if is_admin_with_json(callback_query.from_user.id):
         kb.button(text="Админ-панель")
     return kb.as_markup(resize_keyboard=True)
 
@@ -73,6 +84,27 @@ async def choose_category_text(key_list: list) -> str:
         counter += 1
     return text
 
+async def choose_one_file(key_list: list, paths_list : list) -> str:
+    text = "Выберите один из файлов для установки \n \n"
+    text += await key_list_with_paths(key_list, paths_list)
+    return text
+
+async def key_list_to_text(key_list: list) -> str:
+    text = ""
+    counter = 1
+    for key in key_list:
+        text += f"{counter}. {key} \n \n"
+        counter += 1
+    return text
+
+async def key_list_with_paths(key_list: list, path_list : list) -> str:
+    text = ""
+    counter = 1
+    for elem_num in range(len(key_list)):
+        text += f"{counter}. {key_list[elem_num]} \n"
+        text += f"Путь: {path_list[elem_num]} \n \n"
+        counter += 1
+    return text
 
 async def choose_tags_query(key_list: list) -> str:
     print(key_list)
@@ -149,6 +181,30 @@ async def choose_category_callback(key_list: list, can_go_left: bool, can_go_rig
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+# Only for 'font'
+async def choose_category_in_deadend_callback(can_go_back: bool) -> InlineKeyboardMarkup:
+    rows = []
+    if can_go_back:
+        rows.append(
+            [InlineKeyboardButton(
+                text='В предыдущую директорию',
+                callback_data='prev_dir'
+            )])
+    rows.append(
+        [InlineKeyboardButton(
+            text='Скачать все',
+            callback_data='get_fonts_from_all_pres'
+        )])
+    rows.append(
+        [
+            InlineKeyboardButton(
+                text='В главное меню',
+                callback_data='menu_choose'
+            )
+        ]
+    )
+    markup = InlineKeyboardMarkup(inline_keyboard=rows)
+    return markup
 
 async def no_font() -> InlineKeyboardMarkup:
     rows = [
@@ -164,6 +220,15 @@ async def no_font() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+async def go_to_main_menu() -> InlineKeyboardMarkup:
+    rows = [
+        [InlineKeyboardButton(
+            text='Отмена',
+            callback_data='main_menu'
+        )]
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=rows)
+    return markup
 
 async def error_in_send_file() -> InlineKeyboardMarkup:
     rows = [
@@ -299,6 +364,18 @@ def admin_panel_query() -> InlineKeyboardMarkup:
             InlineKeyboardButton(
                 text="Удалить материал",
                 callback_data="admin_delete"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Добавить нового администратора",
+                callback_data="new_admin_add"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Удалить администратора",
+                callback_data="old_admin_delete"
             )
         ],
     ]

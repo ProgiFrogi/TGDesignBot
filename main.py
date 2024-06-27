@@ -13,19 +13,19 @@ from TGDesignBot.YandexDisk.YaDiskHandler import update_tree
 
 
 async def main():
-    # Fill database + create tree with dir
-    load_dotenv()
-    tree = Tree()
-    update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
-    with open("./Tree/ObjectTree.pkl", "wb") as fp:
-        pickle.dump(tree, fp)
-    # Initialize DataBase.
-    initialize_database()
-
-    # AutoUpdating information from YaDisk every 5 hours.
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(update_tree_and_db, "interval", hours=5)
-    scheduler.start()
+    # # Fill database + create tree with dir
+    # load_dotenv()
+    # tree = Tree()
+    # update_tree(tree, datetime.datetime.min.replace(tzinfo=datetime.timezone.utc))
+    # with open("./Tree/ObjectTree.pkl", "wb") as fp:
+    #     pickle.dump(tree, fp)
+    # # Initialize DataBase.
+    # initialize_database()
+    #
+    # # AutoUpdating information from YaDisk every 5 hours.
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(update_tree_and_db, "interval", hours=5)
+    # scheduler.start()
 
     await TGbot.start_bot()
 

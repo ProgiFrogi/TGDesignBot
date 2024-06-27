@@ -1,13 +1,14 @@
 import json
 import os
 import pickle
+
+from TGDesignBot.utility.checkers import is_admin_with_json
 from TGDesignBot.utility.tg_utility import can_go_right as check_right, get_list_of_files, \
-    from_button_to_file, admin_from_chose_dir_to_choose_file
+    admin_from_chose_dir_to_choose_file
 from TGDesignBot.utility.tg_utility import can_go_left as check_left
 from TGDesignBot.utility.tg_utility import can_go_back as check_back
 from TGDesignBot.utility.tg_utility import update_data as update_user_info
 from TGDesignBot.utility.tg_utility import update_indx as update_user_indx
-from TGDesignBot.DBHandler import is_user_admin
 from TGDesignBot.YandexDisk.YaDiskHandler import upload_to_disk
 from aiogram.fsm.context import FSMContext
 import aiogram.exceptions as tg_exceptions
@@ -29,7 +30,7 @@ class AdminState(StatesGroup):
 
 
 @router.message(F.text.lower() == "админ-панель",
-                lambda message: is_user_admin(message.from_user.id))
+                lambda message: is_admin_with_json(message.from_user.id))
 async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
@@ -40,8 +41,7 @@ async def admin_menu(message: Message, state: FSMContext):
 
 # If user in root
 @router.callback_query(F.data == "admin_add",
-                       lambda callback_query: is_user_admin(
-                           callback_query.from_user.id))
+                       lambda callback_query: is_admin_with_json(callback_query.from_user.id))
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -77,7 +77,7 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
 
 @router.callback_query(F.data == "admin_delete",
-                       lambda callback_query: is_user_admin(callback_query.from_user.id))
+                       lambda callback_query: is_admin_with_json(callback_query.from_user.id))
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.choose_button)
@@ -117,7 +117,6 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         dist_indx = config['dist']
 
         user_info = await state.get_data()
-        indx_list_start = user_info['indx_list_start']
         indx_list_end = user_info['indx_list_end']
         can_go_back = user_info['can_go_back']
         child_list = user_info['child_list']

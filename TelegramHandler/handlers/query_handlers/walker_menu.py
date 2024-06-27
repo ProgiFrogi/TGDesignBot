@@ -18,7 +18,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from ...keyboards.start_and_simple_button import (choose_category_text,
                                                   choose_category_callback,
-                                                  error_in_send_file)
+                                                  error_in_send_file, key_list_with_paths,
+                                                  choose_category_in_deadend_callback)
 from ...keyboards.choose_file_keyboard import choose_file_kb_query
 
 router = Router()
@@ -71,13 +72,11 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
 @router.callback_query(WalkerState.choose_button, F.data == "next")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
     with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
         user_info = await state.get_data()
-        indx_list_start = user_info['indx_list_start']
         indx_list_end = user_info['indx_list_end']
         can_go_back = user_info['can_go_back']
         child_list = user_info['child_list']
@@ -105,7 +104,6 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
 @router.callback_query(WalkerState.choose_button, F.data == "prev")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
     with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
@@ -145,9 +143,6 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         dist_indx = config['dist']
         user_info = await state.get_data()
         path = user_info['path']
-        indx_list_start = user_info['indx_list_start']
-        indx_list_end = user_info['indx_list_end']
-        child_list = user_info['child_list']
         type_file = user_info['type_file']
 
         indx_list_start = 0
@@ -182,17 +177,22 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
         files_list = await get_list_of_files(state)
         file_name_list = []
+        list_paths = []
 
-        for file in files_list:
-            file_name_list.append(file[2])
+        for elem_num in range(len(files_list)):
+            file_name_list.append(files_list[elem_num][2])
+            list_paths.append(files_list[elem_num][1])
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)
         if len(file_name_list) != 0:
             reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end],
                                                       can_go_left,
                                                       can_go_right)
-            text = await choose_category_text(file_name_list[indx_list_start:indx_list_end])
-            await from_button_to_file(state, files_list, file_name_list, WalkerState.choose_file)
+            text = await key_list_with_paths(
+                file_name_list[indx_list_start:indx_list_end],
+                list_paths[indx_list_start:indx_list_end]
+            )
+            await from_button_to_file(state, files_list, file_name_list, WalkerState.choose_file, list_paths)
             await choose_message_from_type_file_query(callback_query, state, reply_markup, text)
         else:
 
@@ -228,6 +228,10 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
     except:
         print('Proxy error')
     try:
+        await callback_query.bot.send_message(
+            chat_id=callback_query.message.chat.id,
+            text=f'Ваш путь до презентаций: "корневая папка/{path}"'
+        )
         await start_send_fonts_for_query(callback_query, path)
     except:
         return
@@ -266,14 +270,44 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
         can_go_back = await check_back(path)
         can_go_right = await check_right(indx_list_end, len(child_list))
         can_go_left = await check_left(indx_list_start)
-
         await update_user_info(state, path, indx_list_start, indx_list_end, can_go_back, child_list)
+        if type_file == 'font':
+            if len(child_list) == 0:
+                files_list = await get_list_of_files(state)
+                reply_markup = await choose_category_in_deadend_callback(can_go_back)
+                text = f'Количесто найденных презентаций: {len(files_list)}'
+                if len(files_list) > 0:
+                    text += '\n Вы можете скачать шрифты для этих презентаций: \n'
+                for num_file in range(len(files_list)):
+                    text += f'{num_file}. {files_list[num_file]} \n'
 
-        reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
-                                                      can_go_right, can_go_back, type_file)
-        text = await choose_category_text(child_list[indx_list_start:indx_list_end])
-
-        await callback_query.message.edit_text(
-            text=text,
-            reply_markup=reply_markup
-        )
+                await callback_query.message.edit_text(
+                    text=text,
+                    reply_markup=reply_markup
+                )
+            else:
+                reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+                                                              can_go_right, can_go_back, type_file)
+                text = await choose_category_text(child_list[indx_list_start:indx_list_end])
+                await callback_query.message.edit_text(
+                    text=text,
+                    reply_markup=reply_markup
+                )
+        elif type_file in ('template', 'slide'):
+            if len(child_list) == 0:
+                files_list = await get_list_of_files(state)
+                text = f'Количесто найденных презентаций: {len(files_list)}'
+                reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+                                                              can_go_right, can_go_back, type_file)
+                await callback_query.message.edit_text(
+                    text=text,
+                    reply_markup=reply_markup
+                )
+            else:
+                reply_markup = await choose_category_callback(child_list[indx_list_start:indx_list_end], can_go_left,
+                                                              can_go_right, can_go_back, type_file)
+                text = await choose_category_text(child_list[indx_list_start:indx_list_end])
+                await callback_query.message.edit_text(
+                    text=text,
+                    reply_markup=reply_markup
+                )
