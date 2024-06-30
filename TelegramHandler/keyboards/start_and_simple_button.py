@@ -173,7 +173,7 @@ async def choose_category_callback(key_list: list, can_go_left: bool, can_go_rig
     rows.append(
         [
             InlineKeyboardButton(
-                text='В главное меню',
+                text='Вернуться к выбору материалов',
                 callback_data='menu_choose'
             )
         ]
@@ -208,10 +208,6 @@ async def choose_category_in_deadend_callback(can_go_back: bool) -> InlineKeyboa
 
 async def no_font() -> InlineKeyboardMarkup:
     rows = [
-        [InlineKeyboardButton(
-            text='Назад',
-            callback_data='step_back'
-        )],
         [InlineKeyboardButton(
             text='Вернуться к выбору материалов',
             callback_data='menu_choose'
