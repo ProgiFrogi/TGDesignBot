@@ -12,7 +12,7 @@ def initialize_database() -> None:
     with open("./admins.json", "r") as admins_file:
         config = json.load(admins_file)
 
-    admins = list(map(int, config["admin_id"]))
+    admins = config["admin_id"]
 
     if len(admins) != 0:
         insert_many_users(admins)
