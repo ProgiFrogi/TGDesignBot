@@ -27,7 +27,7 @@ async def initiate_admin_add(callback_query: CallbackQuery, state: FSMContext):
 @router.message(AdminState.input_id)
 async def process_new_admin_id(message: Message, state: FSMContext):
     await state.clear()
-    with open("admins.json", "r") as file:
+    with open("./admins.json", "r") as file:
         config = json.load(file)
 
     new_admin_id = int(message.text)
@@ -58,12 +58,12 @@ async def confirm_new_admin(message: Message, state: FSMContext):
         return
 
     await state.clear()
-    with open("admins.json", "r") as file:
+    with open("./admins.json", "r") as file:
         config = json.load(file)
 
     config["admin_id"].append(new_admin_id)
 
-    with open("admins.json", "w") as file:
+    with open("./admins.json", "w") as file:
         json.dump(config, file)
 
     await message.answer(text=f'Пользователь {new_admin_id} успешно добавлен!', reply_markup=only_main_menu_button_kb())

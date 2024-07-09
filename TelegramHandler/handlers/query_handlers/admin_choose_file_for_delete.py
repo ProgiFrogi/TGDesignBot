@@ -22,7 +22,7 @@ class AdminState(StatesGroup):
 
 
 async def update_file_list(callback_query: CallbackQuery, state: FSMContext, indx_list_start: int, indx_list_end: int):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         dist_indx = json.load(file)['dist']
         user_info = await state.get_data()
         file_name_list = user_info['file_name_list']

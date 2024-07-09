@@ -43,10 +43,10 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
     await state.set_state(AdminState.choose_button)
     await state.update_data(state_action="add")
 
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         dist_indx = json.load(file)['dist']
 
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
     child_list = tree.get_children(tree.root.name)
     indx_list_start, indx_list_end = 0, dist_indx
     can_go_right, can_go_left = await check_right(indx_list_end, len(child_list)), await check_left(indx_list_start)
@@ -69,8 +69,8 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
     await state.set_state(AdminState.choose_button)
     await state.update_data(state_action="delete")
 
-    tree = pickle.load(open("Tree/ObjectTree.pkl", "rb"))
-    with open("config.json", "r") as file:
+    tree = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+    with open("./config.json", "r") as file:
         dist_indx = json.load(file)['dist']
 
     child_list = tree.get_children(tree.root.name)

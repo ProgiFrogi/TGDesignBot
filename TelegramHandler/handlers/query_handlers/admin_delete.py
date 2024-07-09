@@ -11,20 +11,24 @@ from ...keyboards.start_and_simple_button import only_main_menu_button_kb, go_to
 
 router = Router()
 
+
 class AdminState(StatesGroup):
     accept_delete = State()
     input_id_for_delete = State()
 
-@router.callback_query(F.data == "old_admin_delete", lambda callback_query: is_admin_with_json(callback_query.from_user.id))
+
+@router.callback_query(F.data == "old_admin_delete",
+                       lambda callback_query: is_admin_with_json(callback_query.from_user.id))
 async def initiate_delete_admin(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.input_id_for_delete)
     await callback_query.message.edit_text(text="Введите id пользователя, которого хотите удалить из администрации")
 
+
 @router.message(AdminState.input_id_for_delete)
 async def process_delete_admin_id(message: Message, state: FSMContext):
     await state.clear()
-    with open("admins.json", "r") as file:
+    with open("./admins.json", "r") as file:
         config = json.load(file)
         if int(message.text) not in config["admin_id"]:
             await message.answer(
@@ -42,6 +46,7 @@ async def process_delete_admin_id(message: Message, state: FSMContext):
     text = f"Подтвердите удаление {message.text} отправив '{key}'"
     await message.answer(text=text, reply_markup=await go_to_main_menu())
 
+
 @router.message(AdminState.accept_delete)
 async def confirm_delete_admin(message: Message, state: FSMContext):
     user_info = await state.get_data()
@@ -55,11 +60,12 @@ async def confirm_delete_admin(message: Message, state: FSMContext):
         )
         return
 
-    with open("admins.json", "r") as file:
+    with open("./admins.json", "r") as file:
         config = json.load(file)
-        config["admin_id"].remove(int(old_admin_delete))
 
-    with open("admins.json", "w") as file:
+    config["admin_id"].remove(int(old_admin_delete))
+
+    with open("./admins.json", "w") as file:
         json.dump(config, file)
 
     await state.clear()

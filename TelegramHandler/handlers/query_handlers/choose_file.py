@@ -34,7 +34,7 @@ class WalkerState(StatesGroup):
 
 @router.callback_query(WalkerState.choose_file, F.data == "next")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
@@ -66,7 +66,7 @@ async def first_depth_template_find(callback_query: CallbackQuery, state: FSMCon
 
 @router.callback_query(WalkerState.choose_file, F.data == "prev")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 
@@ -155,7 +155,7 @@ async def send_info(callback_query: CallbackQuery):
 
 @router.callback_query(WalkerState.choose_tags, F.data == "next")
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         config = json.load(file)
         dist_indx = config['dist']
 

@@ -38,12 +38,12 @@ class WalkerState(StatesGroup):
 
 
 async def load_config():
-    with open("config.json", "r") as file:
+    with open("./config.json", "r") as file:
         return json.load(file)
 
 
 async def load_tree():
-    return pickle.load(open("Tree/ObjectTree.pkl", "rb"))
+    return pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
 
 
 @router.callback_query(F.data == "pres_templates")

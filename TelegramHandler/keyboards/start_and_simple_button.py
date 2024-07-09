@@ -19,6 +19,7 @@ def start_menu_kb(message: Message) -> ReplyKeyboardMarkup:
         kb.button(text="Админ-панель")
     return kb.as_markup(resize_keyboard=True)
 
+
 def start_menu_kb_query(callback_query: CallbackQuery) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Поиск материалов")
@@ -84,10 +85,12 @@ async def choose_category_text(key_list: list) -> str:
         counter += 1
     return text
 
-async def choose_one_file(key_list: list, paths_list : list) -> str:
+
+async def choose_one_file(key_list: list, paths_list: list) -> str:
     text = "Выберите один из файлов для установки \n \n"
     text += await key_list_with_paths(key_list, paths_list)
     return text
+
 
 async def key_list_to_text(key_list: list) -> str:
     text = ""
@@ -97,7 +100,8 @@ async def key_list_to_text(key_list: list) -> str:
         counter += 1
     return text
 
-async def key_list_with_paths(key_list: list, path_list : list) -> str:
+
+async def key_list_with_paths(key_list: list, path_list: list) -> str:
     text = ""
     counter = 1
     for elem_num in range(len(key_list)):
@@ -105,6 +109,7 @@ async def key_list_with_paths(key_list: list, path_list : list) -> str:
         text += f"Путь: {path_list[elem_num]} \n \n"
         counter += 1
     return text
+
 
 async def choose_tags_query(key_list: list) -> str:
     print(key_list)
@@ -181,6 +186,7 @@ async def choose_category_callback(key_list: list, can_go_left: bool, can_go_rig
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+
 # Only for 'font'
 async def choose_category_in_deadend_callback(can_go_back: bool) -> InlineKeyboardMarkup:
     rows = []
@@ -206,6 +212,7 @@ async def choose_category_in_deadend_callback(can_go_back: bool) -> InlineKeyboa
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+
 async def no_font() -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(
@@ -216,6 +223,7 @@ async def no_font() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+
 async def go_to_main_menu() -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(
@@ -225,6 +233,7 @@ async def go_to_main_menu() -> InlineKeyboardMarkup:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
+
 
 async def error_in_send_file() -> InlineKeyboardMarkup:
     rows = [

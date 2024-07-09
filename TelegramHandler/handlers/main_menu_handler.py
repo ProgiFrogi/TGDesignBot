@@ -51,6 +51,7 @@ async def cmd_cancel_handler(message: Message, state: FSMContext):
         reply_markup=start_menu_kb(message)
     )
 
+
 @router.callback_query(F.data == 'main_menu')
 async def cmd_cancel_handler(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
@@ -83,6 +84,7 @@ async def choose_category_handler(callback_query: CallbackQuery, state: FSMConte
         reply_markup=reply_markup
     )
     await state.set_state(UserStates.in_choose_category)
+
 
 @router.callback_query(F.data == "menu_choose")
 async def choose_category_handler(callback_query: CallbackQuery, state: FSMContext):
