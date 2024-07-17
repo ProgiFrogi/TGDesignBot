@@ -32,16 +32,6 @@ async def cmd_start_handler(message: Message, state: FSMContext):
     )
 
 
-@router.message(StateFilter(default_state), Command(commands=["menu"]), lambda message: message.from_user.id in users)
-@router.message(default_state, F.text.lower() == "в главное меню")
-async def cmd_cancel_handler(message: Message, state: FSMContext):
-    await state.set_data({})
-    await message.answer(
-        text="Вы и так в главном меню...",
-        reply_markup=start_menu_kb(message)
-    )
-
-
 @router.message(Command(commands=["menu"]), lambda message: message.from_user.id in users)
 @router.message(F.text.lower() == "в главное меню")
 async def cmd_cancel_handler(message: Message, state: FSMContext):
