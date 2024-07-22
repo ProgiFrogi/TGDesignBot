@@ -9,7 +9,7 @@ from aiogram.types import Message, CallbackQuery
 from TGDesignBot.utility.tg_utility import can_go_right as check_right, can_go_left as check_left, \
     update_indx as update_user_indx
 from ...keyboards import choose_tags_query
-from ...keyboards.choose_file_keyboard import choose_file_kb_query, back_in_last_state
+from ...keyboards.choose_file_keyboard import choose_file_for_delete, back_in_last_state
 from ....YandexDisk.YaDiskHandler import delete_from_disk
 
 router = Router()
@@ -30,7 +30,7 @@ async def update_file_list(callback_query: CallbackQuery, state: FSMContext, ind
         can_go_right = await check_right(indx_list_end, len(file_name_list))
         can_go_left = await check_left(indx_list_start)
 
-        reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left,
+        reply_markup = await choose_file_for_delete(file_name_list[indx_list_start:indx_list_end], can_go_left,
                                                   can_go_right)
         text = await choose_tags_query(file_name_list[indx_list_start:indx_list_end])
 

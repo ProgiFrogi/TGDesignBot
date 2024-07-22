@@ -17,7 +17,7 @@ from TGDesignBot.utility.tg_utility import (
 )
 from TGDesignBot.YandexDisk.YaDiskHandler import upload_to_disk
 
-from ...keyboards import choose_file_kb_query
+from ...keyboards import choose_file_kb_query, choose_file_for_delete
 from ...keyboards.start_and_simple_button import (
     admin_panel_query, admin_choose_category_template_query,
     choose_tags_query, admin_add_here
@@ -36,6 +36,10 @@ async def admin_menu(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(text='Выберите действие', reply_markup=admin_panel_query())
 
+@router.callback_query(F.data == "admin_menu_choose", lambda message: is_admin_with_json(message.from_user.id))
+async def admin_menu(callback_query: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback_query.message.edit_text(text="Выберите действие \n\n", reply_markup=admin_panel_query())
 
 @router.callback_query(F.data == "admin_add", lambda callback_query: is_admin_with_json(callback_query.from_user.id))
 async def first_depth_template_find(callback_query: CallbackQuery, state: FSMContext):
@@ -167,7 +171,7 @@ async def output_files(callback_query: CallbackQuery, state: FSMContext):
 
     indx_list_start, indx_list_end = 0, dist_indx
     can_go_right, can_go_left = await check_right(indx_list_end, len(file_name_list)), await check_left(indx_list_start)
-    reply_markup = await choose_file_kb_query(file_name_list[indx_list_start:indx_list_end], can_go_left, can_go_right)
+    reply_markup = await choose_file_for_delete(file_name_list[indx_list_start:indx_list_end], can_go_left, can_go_right)
     text = await choose_tags_query(file_name_list[indx_list_start:indx_list_end])
 
     await admin_from_chose_dir_to_choose_file(state, files_list, file_name_list, AdminState.choose_file)
