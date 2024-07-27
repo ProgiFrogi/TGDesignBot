@@ -1,9 +1,11 @@
 import pickle
 
-# try:
-tree_obj = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
-# except:
-#     # tree = ClassTree.Tree()
+from TGDesignBot.Tree import ClassTree
+
+try:
+    tree_obj = pickle.load(open("./Tree/ObjectTree.pkl", "rb"))
+except:
+    tree = ClassTree.Tree()
 dist_indx = 9
 indx_list_start = 0
 indx_list_end = indx_list_start + dist_indx
