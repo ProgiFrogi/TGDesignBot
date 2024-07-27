@@ -17,10 +17,10 @@ from TGDesignBot.utility.tg_utility import (
 )
 from TGDesignBot.YandexDisk.YaDiskHandler import upload_to_disk
 
-from ...keyboards import choose_file_kb_query, choose_file_for_delete
+from ...keyboards import choose_file_for_delete, to_admin_menu
 from ...keyboards.start_and_simple_button import (
     admin_panel_query, admin_choose_category_template_query,
-    choose_tags_query, admin_add_here
+    choose_tags_query
 )
 
 router = Router()
@@ -133,7 +133,7 @@ async def navigate_template(callback_query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(AdminState.choose_button, F.data == "add_here")
 async def add_here(callback_query: CallbackQuery):
-    reply_markup = admin_add_here()
+    reply_markup = to_admin_menu()
     await callback_query.message.edit_text(text="Отправьте ваш файл в чат", reply_markup=reply_markup)
 
 

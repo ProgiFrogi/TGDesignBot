@@ -2,15 +2,15 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state, StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import Message, CallbackQuery
 
-from ..keyboards.start_and_simple_button import start_menu_kb, choose_category_kb, start_menu_kb_query
+from ..keyboards.start_and_simple_button import start_menu_kb, start_menu_kb_query
 from ..keyboards.InlineKeyboards.searchKB import build_choose_kb
 
 router = Router()
 
-users = [5592902615, 2114778573, 928962436, 986985057]
+users = []
 
 
 class UserStates(StatesGroup):

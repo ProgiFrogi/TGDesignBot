@@ -1,9 +1,8 @@
-from aiogram import Bot, Dispatcher, types, F
+from aiogram import types
 from aiogram.types import ReplyKeyboardMarkup, CallbackQuery
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import Message
-from aiogram.fsm.context import FSMContext
 from TGDesignBot.utility.checkers import is_admin_with_json
 
 
@@ -381,19 +380,6 @@ def admin_panel_query() -> InlineKeyboardMarkup:
             InlineKeyboardButton(
                 text="Удалить администратора",
                 callback_data="old_admin_delete"
-            )
-        ],
-    ]
-    markup = InlineKeyboardMarkup(inline_keyboard=rows)
-    return markup
-
-
-def admin_add_here() -> InlineKeyboardMarkup:
-    rows = [
-        [
-            InlineKeyboardButton(
-                text="Назад",
-                callback_data="step_back"
             )
         ],
     ]

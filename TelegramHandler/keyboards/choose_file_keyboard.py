@@ -20,6 +20,7 @@ async def choose_file_kb(key_list: list, message: Message, can_go_left: bool,
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
+
 async def choose_file_kb_query_handler(key_list: list, can_go_left: bool, can_go_right: bool) -> list:
     nums_for_choose = [
         InlineKeyboardButton(
@@ -58,6 +59,7 @@ async def choose_file_kb_query_handler(key_list: list, can_go_left: bool, can_go
         ])
     return rows
 
+
 async def choose_file_kb_query(key_list: list, can_go_left: bool, can_go_right: bool) -> InlineKeyboardMarkup:
     rows = await choose_file_kb_query_handler(key_list, can_go_left, can_go_right)
     rows.append([
@@ -69,6 +71,7 @@ async def choose_file_kb_query(key_list: list, can_go_left: bool, can_go_right: 
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
 
+
 async def choose_file_for_delete(key_list: list, can_go_left: bool, can_go_right: bool) -> InlineKeyboardMarkup:
     rows = await choose_file_kb_query_handler(key_list, can_go_left, can_go_right)
     rows.append([
@@ -79,6 +82,20 @@ async def choose_file_for_delete(key_list: list, can_go_left: bool, can_go_right
     ])
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
+
+
+def to_admin_menu() -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton(
+                text='Вернуться к админ-панели',
+                callback_data='admin_menu_choose'
+            )
+        ],
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=rows)
+    return markup
+
 
 def download_file() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -119,6 +136,7 @@ def back_in_last_state() -> InlineKeyboardMarkup:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=rows)
     return markup
+
 
 async def work_with_tags(key_list: list, can_go_left: bool,
                          can_go_right: bool, state: FSMContext) -> ReplyKeyboardMarkup:

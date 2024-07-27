@@ -7,6 +7,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
 from TGDesignBot.utility.checkers import is_admin_with_json
+from ...keyboards import to_admin_menu
 from ...keyboards.start_and_simple_button import only_main_menu_button_kb, go_to_main_menu
 
 router = Router()
@@ -22,11 +23,15 @@ class AdminState(StatesGroup):
 async def initiate_delete_admin(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await state.set_state(AdminState.input_id_for_delete)
-    await callback_query.message.edit_text(text="Введите id пользователя, которого хотите удалить из администрации")
+    await callback_query.message.edit_text(text="Введите id пользователя, которого хотите удалить из администрации:",
+                                           reply_markup=to_admin_menu())
 
 
 @router.message(AdminState.input_id_for_delete)
 async def process_delete_admin_id(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer(text='Нужно ввести числовое значение. Попробуйте снова')
+        return
     await state.clear()
     with open("./admins.json", "r") as file:
         config = json.load(file)
