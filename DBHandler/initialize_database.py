@@ -13,6 +13,8 @@ def initialize_database() -> None:
         config = json.load(admins_file)
 
     admins = config["admin_id"]
+    for i in range(0, len(admins)):
+        admins[i] = [admins[i], "admin"]
 
     if len(admins) != 0:
         insert_many_users(admins)
